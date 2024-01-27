@@ -67,3 +67,4 @@ UserSettings
 
 out
 *.DS_Store
+.idea/
