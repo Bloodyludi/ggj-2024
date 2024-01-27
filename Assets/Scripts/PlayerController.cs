@@ -11,11 +11,14 @@ public partial class PlayerController : MonoBehaviour
     
     private SoundManager soundManager;
     private float blockedTime;
+    
+    private MapManager mapManager;
 
     private void Awake()
     {
         soundManager = GameObject.FindWithTag("Sound")?.GetComponent<SoundManager>();
         beatManager = GameObject.Find("BeatManager").GetComponent<BeatManager>();
+        mapManager = GameObject.Find("Map").GetComponent<MapManager>();
     }
 
     private void OnEnable()

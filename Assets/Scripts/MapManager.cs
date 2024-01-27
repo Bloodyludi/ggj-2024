@@ -2,11 +2,13 @@ using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
-    [SerializeField] private Transform dancefloor;
+    public Transform dancefloor;
     [SerializeField] private DancefloorTile dancefloorTilePrefab;
     
     [SerializeField] private int width = 5;
     [SerializeField] private int height = 8;
+
+    public float TileSize => dancefloorTilePrefab.TileSize;
     
     private void Awake()
     {
