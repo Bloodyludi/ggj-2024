@@ -793,7 +793,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.6257563
+  orthographic size: 7.177897
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1454,9 +1454,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b57ac11329144c8a545192fff61232a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameBPM: 109
+  gameBPM: 30
   BeatDebug: {fileID: 1525656265}
   gameController: {fileID: 407178550}
+  moveWindowTimePercent: 10
 --- !u!4 &1153162662
 Transform:
   m_ObjectHideFlags: 0

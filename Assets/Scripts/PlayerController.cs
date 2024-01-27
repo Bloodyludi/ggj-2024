@@ -18,9 +18,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxThrowDistance = 10f;
     [SerializeField] private float durationToReachMaxDistance = 2f;
     [SerializeField] private float stunDuration = 1.0f;
-
+    
     private BeatManager beatManager;
-    private Vector2? moveDir = Vector2.zero;
+    private Vector2 moveDir = Vector2.zero;
     private float moveRecordTime = 0;
     private IEnumerator currentMoveRoutine;
 
@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
     private SoundManager soundManager;
     private AudioSource pullingLoop;
     private AudioSource chargingLoop;
+    private float lastBeatTime;
+    private float nextBeatTime;
 
     public void StunPlayer()
     {
@@ -50,8 +52,8 @@ public class PlayerController : MonoBehaviour
         soundManager = GameObject.FindWithTag("Sound")?.GetComponent<SoundManager>();
         beatManager = GameObject.Find("BeatManager").GetComponent<BeatManager>();
 
-        beatManager.OnBeatUpdate -= MoveToTheBeat;
-        beatManager.OnBeatUpdate += MoveToTheBeat;
+        beatManager.OnBeatUpdate -= RecordBeat;
+        beatManager.OnBeatUpdate += RecordBeat;
     }
 
     private void OnEnable()
@@ -79,29 +81,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void MoveToTheBeat()
+    private void RecordBeat()
     {
-        float beatTime = Time.time;
-        if (playerState.CanWalk && moveDir.HasValue)
-        {
-            float lapsedTimeSinceBeat = beatTime - moveRecordTime;
-            float beatTimingPercent = 1 - lapsedTimeSinceBeat / beatManager.Tempo;
-            RestartJumpRoutine();
-            //this.transform.position += (Vector3)moveDir.Value;
-            playerState.WalkDirection = moveDir.Value;
-            if (Mathf.Abs(moveDir.Value.x) > 0)
-            {
-                playerState.PlayerOrientation = (int)Mathf.Sign(moveDir.Value.x);
-            }
-        }
-        else
-        {
-            rigidbody.velocity = Vector2.zero;
-            playerState.WalkDirection = Vector2.zero;
-        }
-
-        moveDir = null;
-        moveRecordTime = beatTime;
+        lastBeatTime = Time.time;
+        nextBeatTime = lastBeatTime + beatManager.SecondsPerBeat;
     }
 
     private void RestartJumpRoutine()
@@ -111,61 +94,86 @@ public class PlayerController : MonoBehaviour
             StopCoroutine(currentMoveRoutine);
         }
 
-        currentMoveRoutine = Move(moveDir.Value);
+        currentMoveRoutine = Move(moveDir);
         StartCoroutine(currentMoveRoutine);
     }
 
     private IEnumerator Move(Vector2 direction)
     {
-        float tempo = beatManager.Tempo * 0.2f;
+        float tempo = beatManager.SecondsPerBeat * 0.2f;
         var ogPos = transform.position;
         Vector2 currentPosition = ogPos;
 
-        for (float t = 0; t <= tempo; t += Time.deltaTime)
-        {
-            float lapsedPercent = Mathf.Clamp01(t / tempo);
-            float y;
-            if (direction.x != 0)
-            {
-                y = horizontalJumpAnimationCurve.Evaluate(lapsedPercent);
-                currentPosition.x = ogPos.x + lapsedPercent * direction.x;
-                currentPosition.y = ogPos.y + y;
-            }
-            else
-            {
-                if (direction.y > 0)
-                {
-                    y = verticalUpwardsJumpAnimationCurve.Evaluate(lapsedPercent);
-                    currentPosition.y = ogPos.y + y;
-                }
-                else if (direction.y < 0)
-                {
-                    y = verticalDownwardsJumpAnimationCurve.Evaluate(lapsedPercent);
-                    currentPosition.y = ogPos.y - y;
-                }
-            }
-
-            transform.position = currentPosition;
-            yield return new WaitForEndOfFrame();
-        }
+        // for (float t = 0; t <= tempo; t += Time.deltaTime)
+        // {
+        //     float lapsedPercent = Mathf.Clamp01(t / tempo);
+        //     float y;
+        //     if (direction.x != 0)
+        //     {
+        //         y = horizontalJumpAnimationCurve.Evaluate(lapsedPercent);
+        //         currentPosition.x = ogPos.x + lapsedPercent * direction.x;
+        //         currentPosition.y = ogPos.y + y;
+        //     }
+        //     else
+        //     {
+        //         if (direction.y > 0)
+        //         {
+        //             y = verticalUpwardsJumpAnimationCurve.Evaluate(lapsedPercent);
+        //             currentPosition.y = ogPos.y + y;
+        //         }
+        //         else if (direction.y < 0)
+        //         {
+        //             y = verticalDownwardsJumpAnimationCurve.Evaluate(lapsedPercent);
+        //             currentPosition.y = ogPos.y - y;
+        //         }
+        //     }
+        //
+        //     transform.position = currentPosition;
+        //     yield return new WaitForEndOfFrame();
+        // }
 
         transform.position = ogPos + (Vector3)direction;
         currentMoveRoutine = null;
+        yield return null;
     }
 
     private void OnMoveRegistered(InputAction.CallbackContext context)
     {
-        if (moveDir == null)
+        var moveWindowSeconds = beatManager.moveWindowTimePercent * beatManager.SecondsPerBeat / 100;
+        // var timeSinceLastMove = Time.time - moveRecordTime;
+        // if (timeSinceLastMove <= moveWindowSeconds * 2)
+        // {
+        //     return;
+        // }
+        
+        moveRecordTime = Time.time;
+        moveDir = context.ReadValue<Vector2>();
+
+        if (playerState.CanWalk)
         {
-            RecordMoveDirection(context);
+            var lapsedTimeSinceBeat = moveRecordTime - lastBeatTime;
+            var timeUntilNextBeat = nextBeatTime - moveRecordTime;
+            var timeToClosestBeat = Mathf.Min(lapsedTimeSinceBeat, timeUntilNextBeat);
+
+            Debug.Log($"Time to closest beat: {timeToClosestBeat}, Move window seconds: {moveWindowSeconds}");
+            
+            if (timeToClosestBeat <= moveWindowSeconds)
+            {
+                Debug.Log("Moving");
+                
+                RestartJumpRoutine();
+
+                // TODO: check if these are needed
+                //this.transform.position += (Vector3)moveDir.Value;
+                playerState.WalkDirection = moveDir;
+                if (Mathf.Abs(moveDir.x) > 0)
+                {
+                    playerState.PlayerOrientation = (int)Mathf.Sign(moveDir.x);
+                }
+            }
         }
     }
 
-    private void RecordMoveDirection(InputAction.CallbackContext context)
-    {
-        moveDir = context.ReadValue<Vector2>();
-        moveRecordTime = Time.time;
-    }
 
     private void OnPickup(InputAction.CallbackContext context)
     {

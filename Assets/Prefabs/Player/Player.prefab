@@ -325,6 +325,7 @@ MonoBehaviour:
   maxThrowDistance: 10
   durationToReachMaxDistance: 1.6
   stunDuration: 2.5
+  moveWindowTimePercent: 45
 --- !u!114 &1612666963757044706
 MonoBehaviour:
   m_ObjectHideFlags: 0
