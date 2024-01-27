@@ -13,6 +13,7 @@ public class PlayerManager : MonoBehaviour
     {
         var p1 = PlayerInput.Instantiate(playerPrefab, playerIndex: 1, controlScheme: "Keyboard Left", pairWithDevice: Keyboard.current);
         var p1Transform = p1.transform;
+        p1Transform.name = "Player 1";
         p1Transform.parent = mapManager.dancefloor;
         p1Transform.localPosition = Vector3.zero;
         player1State = p1.GetComponent<PlayerState>();

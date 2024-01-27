@@ -47,7 +47,7 @@ public partial class PlayerController
             //this.transform.position += (Vector3)direction * movementDistance * lapsedPercent;
         });
 
-        transform.position = ogPos + (Vector3)direction * movementDistance;
+        transform.position = ogPos + (Vector3)direction * mapManager.TileSize;
         currentMoveRoutine = null;
         yield return null;
     }

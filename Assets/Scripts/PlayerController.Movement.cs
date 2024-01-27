@@ -68,7 +68,8 @@ public partial class PlayerController
     private IEnumerator Move(Vector2 direction)
     {
         float movementDuration = beatManager.SecondsPerBeat * 0.2f;
-        var ogPos = transform.position;
+        var position = transform.position;
+        var ogPos = position;
         Vector2 currentPosition = ogPos;
         yield return PacedForLoop(movementDuration, lapsedPercent =>
         {
@@ -84,7 +85,9 @@ public partial class PlayerController
             transform.position = currentPosition;
         });
 
-        transform.position = ogPos + (Vector3)direction * mapManager.TileSize;
+        position = ogPos + (Vector3)direction * mapManager.TileSize;
+        transform.position = position;
+        mapManager.OnPlayerMovementFinished(ogPos,position,this);
         currentMoveRoutine = null;
         yield return null;
     }
