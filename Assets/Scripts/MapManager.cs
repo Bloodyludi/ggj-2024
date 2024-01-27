@@ -48,6 +48,9 @@ public partial class MapManager : MonoBehaviour
         beatManager = FindObjectOfType<BeatManager>();
         beatManager.OnBeatUpdate -= ResolveBoardCollisions;
         beatManager.OnBeatUpdate += ResolveBoardCollisions;
+
+        beatManager.OnBeatUpdate -= UpdateDeadlyTilePositions;
+        beatManager.OnBeatUpdate += UpdateDeadlyTilePositions;
     }
 
     private void ResolveBoardCollisions()
