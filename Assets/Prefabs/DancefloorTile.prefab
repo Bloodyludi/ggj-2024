@@ -99,4 +99,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   darkSprite: {fileID: 21300000, guid: 3d3628cc470298548a24051ee7a67ba9, type: 3}
   brightSprite: {fileID: 21300000, guid: 5479a90f9bad23649b309dc17380259f, type: 3}
+  deadlySprite: {fileID: 21300000, guid: f7b7306d08b02cb4e90c62d7dfa2791f, type: 3}
   ren: {fileID: 1187912064430790253}

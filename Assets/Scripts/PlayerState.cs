@@ -8,6 +8,7 @@ public enum PlayerAction
     Carrying,
     Throwing,
     Stunned,
+    Dead,
 }
 
 public class PlayerState : MonoBehaviour

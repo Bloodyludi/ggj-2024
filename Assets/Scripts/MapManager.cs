@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MapManager : MonoBehaviour
+public partial class MapManager : MonoBehaviour
 {
     public Transform dancefloor;
     [SerializeField] private DancefloorTile dancefloorTilePrefab;
@@ -9,15 +9,26 @@ public class MapManager : MonoBehaviour
     [SerializeField] private int height = 8;
 
     public float TileSize => dancefloorTilePrefab.TileSize;
-    
+
+    public DancefloorTile[] tiles;
+    private BeatManager beatManager;
+
     private void Awake()
     {
+        beatManager = GameObject.Find("BeatManager").GetComponent<BeatManager>();
+        tiles = new DancefloorTile[width * height];
+        
         for (var y = 0; y < height; y++)
         {
             for (var x = 0; x < width; x++)
             {
                 var tile = Instantiate(dancefloorTilePrefab, dancefloor);
                 tile.SetPosition(x, y);
+                
+                // Create a deadly tile for testing
+                tile.SetDeadly(x == 2 && y == 2 || x == 2 && y == 3 || x == 2 && y == 4);
+
+                tiles[GetTileIndex(tile.position)] = tile;
             }
         }
 
@@ -25,8 +36,10 @@ public class MapManager : MonoBehaviour
             dancefloorTilePrefab.TileSize * (width - 1), 
             dancefloorTilePrefab.TileSize * (height - 1)
             ) / 2;
-    }
 
+        beatManager.OnBeatUpdate -= UpdateDeadlyTilePositions;
+        beatManager.OnBeatUpdate += UpdateDeadlyTilePositions;
+    }
 
     public GameResult GetGameResult()
     {
