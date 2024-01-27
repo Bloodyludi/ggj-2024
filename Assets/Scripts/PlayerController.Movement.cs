@@ -5,8 +5,6 @@ using UnityEngine.InputSystem;
 
 public partial class PlayerController
 {
-    [SerializeField] private float movementDistance = 1f;
-    
     [Header("Movement Animations")] 
     [SerializeField] private AnimationCurve horizontalJumpAnimationCurve;
 
@@ -86,7 +84,7 @@ public partial class PlayerController
             transform.position = currentPosition;
         });
 
-        transform.position = ogPos + (Vector3)direction * movementDistance;
+        transform.position = ogPos + (Vector3)direction * mapManager.TileSize;
         currentMoveRoutine = null;
         yield return null;
     }
@@ -98,11 +96,11 @@ public partial class PlayerController
         {
             case > 0:
                 y = verticalUpwardsJumpAnimationCurve.Evaluate(lapsedPercent);
-                currentPosition.y = ogPos.y + y * movementDistance;
+                currentPosition.y = ogPos.y + y * mapManager.TileSize;
                 break;
             case < 0:
                 y = verticalDownwardsJumpAnimationCurve.Evaluate(lapsedPercent);
-                currentPosition.y = ogPos.y - y * movementDistance;
+                currentPosition.y = ogPos.y - y * mapManager.TileSize;
                 break;
         }
 
@@ -114,8 +112,8 @@ public partial class PlayerController
         float y;
         Vector2 currentPosition;
         y = horizontalJumpAnimationCurve.Evaluate(lapsedPercent);
-        currentPosition.x = ogPos.x + lapsedPercent * direction.x * movementDistance;
-        currentPosition.y = ogPos.y + y * movementDistance;
+        currentPosition.x = ogPos.x + lapsedPercent * direction.x * mapManager.TileSize;
+        currentPosition.y = ogPos.y + y * mapManager.TileSize;
         return currentPosition;
     }
 }

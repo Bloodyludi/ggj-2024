@@ -113,7 +113,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1612666963757044635}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.47244555, y: 0.41994667, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -227,6 +227,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f98476295fe1b4f08a4b5e873087addb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerState: {fileID: 1612666963757044706}
+  playerInput: {fileID: 1524156939793907972}
+  movementDistance: 1
   horizontalJumpAnimationCurve:
     serializedVersion: 2
     m_Curve:
@@ -317,15 +320,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  playerState: {fileID: 1612666963757044706}
-  playerInput: {fileID: 1524156939793907972}
-  pickupTargetSensor: {fileID: 5890044463602198257}
-  rigidbody: {fileID: 1612666963757044639}
-  speedMultiplier: 70
-  maxThrowDistance: 10
-  durationToReachMaxDistance: 1.6
-  stunDuration: 2.5
-  moveWindowTimePercent: 45
+  beatStunDuration: 1
 --- !u!114 &1612666963757044706
 MonoBehaviour:
   m_ObjectHideFlags: 0
