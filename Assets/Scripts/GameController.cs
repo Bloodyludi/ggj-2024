@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -10,13 +11,16 @@ public enum GameResult
 
 public class GameController : MonoBehaviour
 {
+    public event Action OnCustomUpdate;
     [SerializeField] private PlayerManager playerManager;
     [SerializeField] private MapManager mapManager;
     [SerializeField] private GameOverScreen gameOverScreen;
     [SerializeField] private CountdownTimer countdownTimer;
     [SerializeField] private SoundManager soundManager;
+    [SerializeField] private BeatManager beatManager;
     [SerializeField] private int matchDurationSeconds = 180;
     [SerializeField] private int musicSpeedUpThreshold = 60;
+    [SerializeField] private float gameBPM = 120;
 
     private float matchTimeElapsed;
     private bool isSpeedUpTriggered1;
@@ -30,7 +34,9 @@ public class GameController : MonoBehaviour
 
         isSpeedUpTriggered1 = false;
         isSpeedUpTriggered2 = false;
+        beatManager.Init();
         StartCoroutine(StartMatch());
+
     }
 
     private IEnumerator StartMatch()
@@ -41,19 +47,7 @@ public class GameController : MonoBehaviour
             countdownTimer.UpdateTimeLeft(timeLeft);
 
             matchTimeElapsed += Time.deltaTime;
-
-            if (!isSpeedUpTriggered1 && matchDurationSeconds - matchTimeElapsed <= musicSpeedUpThreshold)
-            {
-                isSpeedUpTriggered1 = true;
-                soundManager.SpeedUpMusic(1.3f);
-            }
-
-            if (!isSpeedUpTriggered2 && matchDurationSeconds - matchTimeElapsed <= 15)
-            {
-                isSpeedUpTriggered2 = true;
-                soundManager.SpeedUpMusic(1.5f);
-            }
-
+            
             if (matchTimeElapsed > matchDurationSeconds)
             {
                 GameOver();

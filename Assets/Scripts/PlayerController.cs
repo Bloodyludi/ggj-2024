@@ -4,6 +4,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement Animations")] [SerializeField]
+    private AnimationCurve horizontalJumpAnimationCurve;
+
+    [SerializeField] private AnimationCurve verticalUpwardsJumpAnimationCurve;
+    [SerializeField] private AnimationCurve verticalDownwardsJumpAnimationCurve;
+
     [SerializeField] private PlayerState playerState;
     [SerializeField] private PlayerInput playerInput;
     [SerializeField] private PickupTargetSensor pickupTargetSensor;
@@ -13,7 +19,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float durationToReachMaxDistance = 2f;
     [SerializeField] private float stunDuration = 1.0f;
 
-    private Vector2 moveDir = Vector2.zero;
+    private BeatManager beatManager;
+    private Vector2? moveDir = Vector2.zero;
+    private float moveRecordTime = 0;
+    private IEnumerator currentMoveRoutine;
+
     private float currentThrowCharge;
     private Coroutine chargeThrowRoutine;
     private SoundManager soundManager;
@@ -38,6 +48,10 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         soundManager = GameObject.FindWithTag("Sound")?.GetComponent<SoundManager>();
+        beatManager = GameObject.Find("BeatManager").GetComponent<BeatManager>();
+
+        beatManager.OnBeatUpdate -= MoveToTheBeat;
+        beatManager.OnBeatUpdate += MoveToTheBeat;
     }
 
     private void OnEnable()
@@ -56,31 +70,28 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        
+
         switch (context.action.name)
         {
             case "move":
-                OnMove(context);
-                break;
-            case "pickup":
-                OnPickup(context);
-                break;
-            case "throw":
-                OnThrow(context);
+                OnMoveRegistered(context);
                 break;
         }
     }
 
-    private void FixedUpdate()
+    private void MoveToTheBeat()
     {
-        if (playerState.CanWalk)
+        float beatTime = Time.time;
+        if (playerState.CanWalk && moveDir.HasValue)
         {
-            rigidbody.velocity += moveDir * (Time.fixedDeltaTime * speedMultiplier);
-            playerState.WalkDirection = moveDir;
-
-            if (Mathf.Abs(moveDir.x) > 0)
+            float lapsedTimeSinceBeat = beatTime - moveRecordTime;
+            float beatTimingPercent = 1 - lapsedTimeSinceBeat / beatManager.Tempo;
+            RestartJumpRoutine();
+            //this.transform.position += (Vector3)moveDir.Value;
+            playerState.WalkDirection = moveDir.Value;
+            if (Mathf.Abs(moveDir.Value.x) > 0)
             {
-                playerState.PlayerOrientation = (int)Mathf.Sign(moveDir.x);
+                playerState.PlayerOrientation = (int)Mathf.Sign(moveDir.Value.x);
             }
         }
         else
@@ -88,11 +99,72 @@ public class PlayerController : MonoBehaviour
             rigidbody.velocity = Vector2.zero;
             playerState.WalkDirection = Vector2.zero;
         }
+
+        moveDir = null;
+        moveRecordTime = beatTime;
     }
 
-    private void OnMove(InputAction.CallbackContext context)
+    private void RestartJumpRoutine()
+    {
+        if (currentMoveRoutine != null)
+        {
+            StopCoroutine(currentMoveRoutine);
+        }
+
+        currentMoveRoutine = Move(moveDir.Value);
+        StartCoroutine(currentMoveRoutine);
+    }
+
+    private IEnumerator Move(Vector2 direction)
+    {
+        float tempo = beatManager.Tempo * 0.2f;
+        var ogPos = transform.position;
+        Vector2 currentPosition = ogPos;
+
+        for (float t = 0; t <= tempo; t += Time.deltaTime)
+        {
+            float lapsedPercent = Mathf.Clamp01(t / tempo);
+            float y;
+            if (direction.x != 0)
+            {
+                y = horizontalJumpAnimationCurve.Evaluate(lapsedPercent);
+                currentPosition.x = ogPos.x + lapsedPercent * direction.x;
+                currentPosition.y = ogPos.y + y;
+            }
+            else
+            {
+                if (direction.y > 0)
+                {
+                    y = verticalUpwardsJumpAnimationCurve.Evaluate(lapsedPercent);
+                    currentPosition.y = ogPos.y + y;
+                }
+                else if (direction.y < 0)
+                {
+                    y = verticalDownwardsJumpAnimationCurve.Evaluate(lapsedPercent);
+                    currentPosition.y = ogPos.y - y;
+                }
+            }
+
+            transform.position = currentPosition;
+            yield return new WaitForEndOfFrame();
+        }
+
+        transform.position = ogPos + (Vector3)direction;
+        currentMoveRoutine = null;
+    }
+
+    private void OnMoveRegistered(InputAction.CallbackContext context)
+    {
+        if (moveDir == null)
+        {
+            RecordMoveDirection(context);
+        }
+    }
+
+    private void RecordMoveDirection(InputAction.CallbackContext context)
     {
         moveDir = context.ReadValue<Vector2>();
+        moveRecordTime = Time.time;
     }
 
     private void OnPickup(InputAction.CallbackContext context)
