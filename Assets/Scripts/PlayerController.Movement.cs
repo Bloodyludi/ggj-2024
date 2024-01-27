@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -28,7 +29,7 @@ public partial class PlayerController
 
             var lapsedTimeSinceBeat = moveRecordTime - beatManager.LastBeatTime;
             var timeUntilNextBeat = beatManager.NextBeatTime - moveRecordTime;
-            var moveWindowSeconds = beatManager.moveWindowTimePercent * beatManager.SecondsPerBeat / 100;
+            var moveWindowSeconds = beatManager.MoveWindowTimePercent * beatManager.SecondsPerBeat / 100;
 
             if (lapsedTimeSinceBeat <= moveWindowSeconds)
             {
@@ -47,7 +48,7 @@ public partial class PlayerController
 
     private void MoveOnBeat()
     {
-        RestartJumpRoutine();
+        RestartRoutine( Move(moveDir));
 
         playerState.WalkDirection = moveDir;
         if (Mathf.Abs(moveDir.x) > 0)
@@ -55,28 +56,24 @@ public partial class PlayerController
             playerState.PlayerOrientation = (int)Mathf.Sign(moveDir.x);
         }
     }
-
-    private void RestartJumpRoutine()
+    
+    private IEnumerator PacedForLoop( float duration, Action<float> onLapsedPercent )
     {
-        if (currentMoveRoutine != null)
+        for (float time = 0; time <= duration; time += Time.deltaTime)
         {
-            StopCoroutine(currentMoveRoutine);
+            float lapsedPercent = Mathf.Clamp01(time / duration);
+            onLapsedPercent.Invoke(lapsedPercent);
+            yield return new WaitForEndOfFrame();
         }
-
-        currentMoveRoutine = Move(moveDir);
-        StartCoroutine(currentMoveRoutine);
     }
 
     private IEnumerator Move(Vector2 direction)
     {
-        float tempo = beatManager.SecondsPerBeat * 0.2f;
+        float movementDuration = beatManager.SecondsPerBeat * 0.2f;
         var ogPos = transform.position;
         Vector2 currentPosition = ogPos;
-
-        for (float t = 0; t <= tempo; t += Time.deltaTime)
+        yield return PacedForLoop(movementDuration, lapsedPercent =>
         {
-            float lapsedPercent = Mathf.Clamp01(t / tempo);
-
             if (direction.x != 0)
             {
                 currentPosition = MoveHorizontally(direction, lapsedPercent, ogPos);
@@ -87,8 +84,7 @@ public partial class PlayerController
             }
 
             transform.position = currentPosition;
-            yield return new WaitForEndOfFrame();
-        }
+        });
 
         transform.position = ogPos + (Vector3)direction * movementDistance;
         currentMoveRoutine = null;

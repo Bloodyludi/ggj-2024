@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -41,5 +42,15 @@ public partial class PlayerController : MonoBehaviour
                 OnMoveRegistered(context);
                 break;
         }
+    }
+    private void RestartRoutine(IEnumerator routine)
+    {
+        if (currentMoveRoutine != null)
+        {
+            StopCoroutine(currentMoveRoutine);
+        }
+
+        currentMoveRoutine =routine;
+        StartCoroutine(currentMoveRoutine);
     }
 }
