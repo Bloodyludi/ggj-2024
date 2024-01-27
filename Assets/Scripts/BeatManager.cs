@@ -9,16 +9,16 @@ public class BeatManager : MonoBehaviour
     [SerializeField] private float gameBPM = 120;
     [SerializeField] private GameObject BeatDebug;
     [SerializeField] private GameController gameController;
-    [SerializeField] public float moveWindowTimePercent = 10;
 
+    [Range(1,100)] public float MoveWindowTimePercent = 10;
     [NonSerialized] public float LastBeatTime;
     [NonSerialized] public float NextBeatTime;
     public float SecondsPerBeat => 60.0f / gameBPM;
+    public int BeatCounter { get; private set; }
 
     public void Init()
     {
         StartCoroutine(StartBeatLoop());
-        // StartCoroutine(BeatDebugDisplay());
     }
 
     private IEnumerator StartBeatLoop()
@@ -28,32 +28,18 @@ public class BeatManager : MonoBehaviour
             Debug.Log($"Beat!");
             if (OnBeatUpdate != null)
             {
-                OnBeatUpdate();
+                OnBeatUpdate.Invoke();
             }
-            
+
             LastBeatTime = Time.time;
             NextBeatTime = LastBeatTime + SecondsPerBeat;
-            
-            yield return new WaitForSeconds(SecondsPerBeat);
-            // StartCoroutine(BeatDebugDisplay());
-        }
-    }
+            BeatCounter++;
 
-    // private IEnumerator BeatDebugDisplay()
-    // {
-    //     BeatDebug.transform.localScale = Vector3.one * 2;
-    //
-    //     for (float i = 0; i < SecondsPerBeat; i += Time.deltaTime)
-    //     {
-    //         float percent = Mathf.Clamp01(i / SecondsPerBeat);
-    //         percent = 1 - percent;
-    //         percent = percent * 2 - 1;
-    //         BeatDebug.transform.localScale = Vector3.one + Vector3.one * percent;
-    //         yield return new WaitForEndOfFrame();
-    //     }
-    //
-    //     BeatDebug.transform.localScale = Vector3.one * 2;
-    // }
+            yield return new WaitForSeconds(SecondsPerBeat);
+        }
+
+        BeatCounter = 0;
+    }
 
     public void Update()
     {
@@ -61,8 +47,8 @@ public class BeatManager : MonoBehaviour
         var lapsedTimeSinceBeat = currentTime - LastBeatTime;
         var timeUntilNextBeat = NextBeatTime - currentTime;
         var timeToClosestBeat = Mathf.Min(lapsedTimeSinceBeat, timeUntilNextBeat);
-        var moveWindowSeconds = moveWindowTimePercent * SecondsPerBeat / 100;
-        
+        var moveWindowSeconds = MoveWindowTimePercent * SecondsPerBeat / 100;
+
         if (timeToClosestBeat <= moveWindowSeconds)
         {
             BeatDebug.GetComponent<Renderer>().material.color = Color.green;
