@@ -114,6 +114,13 @@ public class MapManager : MonoBehaviour
         return new Vector2Int(Mathf.FloorToInt(row), Mathf.FloorToInt(column));
     }
     
+    public Vector2 MapToWorld(int row, int column)
+    {
+        var boardOrigin = GetBoardOrigin();
+        Vector2Int cell = new Vector2Int(column, row);
+        return boardOrigin + (cell + Vector2.one * 0.5f) * TileSize;
+
+    }
 
     private Vector2 GetBoardOrigin()
     {
