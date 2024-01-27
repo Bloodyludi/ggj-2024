@@ -29,8 +29,6 @@ public class PlayerController : MonoBehaviour
     private SoundManager soundManager;
     private AudioSource pullingLoop;
     private AudioSource chargingLoop;
-    private float lastBeatTime;
-    private float nextBeatTime;
 
     public void StunPlayer()
     {
@@ -51,9 +49,6 @@ public class PlayerController : MonoBehaviour
     {
         soundManager = GameObject.FindWithTag("Sound")?.GetComponent<SoundManager>();
         beatManager = GameObject.Find("BeatManager").GetComponent<BeatManager>();
-
-        beatManager.OnBeatUpdate -= RecordBeat;
-        beatManager.OnBeatUpdate += RecordBeat;
     }
 
     private void OnEnable()
@@ -79,12 +74,6 @@ public class PlayerController : MonoBehaviour
                 OnMoveRegistered(context);
                 break;
         }
-    }
-
-    private void RecordBeat()
-    {
-        lastBeatTime = Time.time;
-        nextBeatTime = lastBeatTime + beatManager.SecondsPerBeat;
     }
 
     private void RestartJumpRoutine()
@@ -140,37 +129,50 @@ public class PlayerController : MonoBehaviour
     private void OnMoveRegistered(InputAction.CallbackContext context)
     {
         var moveWindowSeconds = beatManager.moveWindowTimePercent * beatManager.SecondsPerBeat / 100;
-        // var timeSinceLastMove = Time.time - moveRecordTime;
-        // if (timeSinceLastMove <= moveWindowSeconds * 2)
-        // {
-        //     return;
-        // }
-        
-        moveRecordTime = Time.time;
-        moveDir = context.ReadValue<Vector2>();
-
-        if (playerState.CanWalk)
+        var timeSinceLastMove = Time.time - moveRecordTime;
+        if (timeSinceLastMove <= moveWindowSeconds * 2)
         {
-            var lapsedTimeSinceBeat = moveRecordTime - lastBeatTime;
-            var timeUntilNextBeat = nextBeatTime - moveRecordTime;
-            var timeToClosestBeat = Mathf.Min(lapsedTimeSinceBeat, timeUntilNextBeat);
-
-            Debug.Log($"Time to closest beat: {timeToClosestBeat}, Move window seconds: {moveWindowSeconds}");
+            return;
+        }
+        
+        if (playerState.CanWalk && context.phase == InputActionPhase.Started)
+        {
+            moveRecordTime = Time.time;
+            moveDir = context.ReadValue<Vector2>();
             
-            if (timeToClosestBeat <= moveWindowSeconds)
-            {
-                Debug.Log("Moving");
-                
-                RestartJumpRoutine();
+            var lapsedTimeSinceBeat = moveRecordTime - beatManager.lastBeatTime;
+            var timeUntilNextBeat = beatManager.nextBeatTime - moveRecordTime;
+            // var timeToClosestBeat = Mathf.Min(lapsedTimeSinceBeat, timeUntilNextBeat);
+            // if (timeToClosestBeat <= moveWindowSeconds)
+            // {
+            //     Debug.Log($"Moving on beat: {timeToClosestBeat}");
+            //     MoveOnBeat();
+            // }
 
-                // TODO: check if these are needed
-                //this.transform.position += (Vector3)moveDir.Value;
-                playerState.WalkDirection = moveDir;
-                if (Mathf.Abs(moveDir.x) > 0)
-                {
-                    playerState.PlayerOrientation = (int)Mathf.Sign(moveDir.x);
-                }
+            // might be handy to know if we were early or late
+            if (lapsedTimeSinceBeat <= moveWindowSeconds)
+            {
+                Debug.Log($"Moving after beat: {lapsedTimeSinceBeat}");
+                MoveOnBeat();
             }
+            else if (timeUntilNextBeat <= moveWindowSeconds)
+            {
+                Debug.Log($"Moving before beat: {timeUntilNextBeat}");
+                MoveOnBeat();
+            }
+        }
+    }
+
+    private void MoveOnBeat()
+    {
+        RestartJumpRoutine();
+
+        // TODO: check if these are needed
+        //this.transform.position += (Vector3)moveDir.Value;
+        playerState.WalkDirection = moveDir;
+        if (Mathf.Abs(moveDir.x) > 0)
+        {
+            playerState.PlayerOrientation = (int)Mathf.Sign(moveDir.x);
         }
     }
 

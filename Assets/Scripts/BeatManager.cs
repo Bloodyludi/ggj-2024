@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-
 public class BeatManager : MonoBehaviour
 {
     public event Action OnBeatUpdate;
@@ -12,9 +11,8 @@ public class BeatManager : MonoBehaviour
     [SerializeField] private GameController gameController;
     [SerializeField] public float moveWindowTimePercent = 10;
 
-    private float lastBeatTime;
-    private float nextBeatTime;
-
+    [NonSerialized] public float lastBeatTime;
+    [NonSerialized] public float nextBeatTime;
     public float SecondsPerBeat => 60.0f / gameBPM;
 
     public void Init()
