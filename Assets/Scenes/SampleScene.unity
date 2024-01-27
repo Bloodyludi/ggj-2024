@@ -1454,10 +1454,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b57ac11329144c8a545192fff61232a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameBPM: 30
+  gameBPM: 109
   BeatDebug: {fileID: 1525656265}
   gameController: {fileID: 407178550}
-  moveWindowTimePercent: 30
+  moveWindowTimePercent: 20
 --- !u!4 &1153162662
 Transform:
   m_ObjectHideFlags: 0

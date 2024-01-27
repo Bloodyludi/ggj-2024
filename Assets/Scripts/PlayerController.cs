@@ -94,33 +94,33 @@ public class PlayerController : MonoBehaviour
         var ogPos = transform.position;
         Vector2 currentPosition = ogPos;
 
-        // for (float t = 0; t <= tempo; t += Time.deltaTime)
-        // {
-        //     float lapsedPercent = Mathf.Clamp01(t / tempo);
-        //     float y;
-        //     if (direction.x != 0)
-        //     {
-        //         y = horizontalJumpAnimationCurve.Evaluate(lapsedPercent);
-        //         currentPosition.x = ogPos.x + lapsedPercent * direction.x;
-        //         currentPosition.y = ogPos.y + y;
-        //     }
-        //     else
-        //     {
-        //         if (direction.y > 0)
-        //         {
-        //             y = verticalUpwardsJumpAnimationCurve.Evaluate(lapsedPercent);
-        //             currentPosition.y = ogPos.y + y;
-        //         }
-        //         else if (direction.y < 0)
-        //         {
-        //             y = verticalDownwardsJumpAnimationCurve.Evaluate(lapsedPercent);
-        //             currentPosition.y = ogPos.y - y;
-        //         }
-        //     }
-        //
-        //     transform.position = currentPosition;
-        //     yield return new WaitForEndOfFrame();
-        // }
+        for (float t = 0; t <= tempo; t += Time.deltaTime)
+        {
+            float lapsedPercent = Mathf.Clamp01(t / tempo);
+            float y;
+            if (direction.x != 0)
+            {
+                y = horizontalJumpAnimationCurve.Evaluate(lapsedPercent);
+                currentPosition.x = ogPos.x + lapsedPercent * direction.x;
+                currentPosition.y = ogPos.y + y;
+            }
+            else
+            {
+                if (direction.y > 0)
+                {
+                    y = verticalUpwardsJumpAnimationCurve.Evaluate(lapsedPercent);
+                    currentPosition.y = ogPos.y + y;
+                }
+                else if (direction.y < 0)
+                {
+                    y = verticalDownwardsJumpAnimationCurve.Evaluate(lapsedPercent);
+                    currentPosition.y = ogPos.y - y;
+                }
+            }
+        
+            transform.position = currentPosition;
+            yield return new WaitForEndOfFrame();
+        }
 
         transform.position = ogPos + (Vector3)direction;
         currentMoveRoutine = null;

@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musicSource: {fileID: 4655915615986428310}
-  gameSound: {fileID: 8300000, guid: 5854ce7841b544ece8d998e391c38651, type: 3}
+  gameSound: {fileID: 8300000, guid: afce892151cbc401cad8699f70bee262, type: 3}
   carrotHit:
   - {fileID: 8300000, guid: 44ea19417e23de0449438111ccf15b4e, type: 3}
   - {fileID: 8300000, guid: b410ceededa0b16458bb25a480a1f60e, type: 3}

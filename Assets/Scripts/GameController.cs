@@ -20,7 +20,6 @@ public class GameController : MonoBehaviour
     [SerializeField] private BeatManager beatManager;
     [SerializeField] private int matchDurationSeconds = 180;
     [SerializeField] private int musicSpeedUpThreshold = 60;
-    [SerializeField] private float gameBPM = 120;
 
     private float matchTimeElapsed;
     private bool isSpeedUpTriggered1;
