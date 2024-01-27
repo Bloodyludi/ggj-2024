@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     private SoundManager soundManager;
     private AudioSource pullingLoop;
     private AudioSource chargingLoop;
+    private float blockedTime;
 
     public void StunPlayer()
     {
@@ -128,9 +129,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnMoveRegistered(InputAction.CallbackContext context)
     {
-        var moveWindowSeconds = beatManager.moveWindowTimePercent * beatManager.SecondsPerBeat / 100;
-        var timeSinceLastMove = Time.time - moveRecordTime;
-        if (timeSinceLastMove <= moveWindowSeconds * 2)
+        if (Time.time <= blockedTime)
         {
             return;
         }
@@ -140,8 +139,9 @@ public class PlayerController : MonoBehaviour
             moveRecordTime = Time.time;
             moveDir = context.ReadValue<Vector2>();
             
-            var lapsedTimeSinceBeat = moveRecordTime - beatManager.lastBeatTime;
-            var timeUntilNextBeat = beatManager.nextBeatTime - moveRecordTime;
+            var lapsedTimeSinceBeat = moveRecordTime - beatManager.LastBeatTime;
+            var timeUntilNextBeat = beatManager.NextBeatTime - moveRecordTime;
+            var moveWindowSeconds = beatManager.moveWindowTimePercent * beatManager.SecondsPerBeat / 100;
             // var timeToClosestBeat = Mathf.Min(lapsedTimeSinceBeat, timeUntilNextBeat);
             // if (timeToClosestBeat <= moveWindowSeconds)
             // {
@@ -149,15 +149,16 @@ public class PlayerController : MonoBehaviour
             //     MoveOnBeat();
             // }
 
-            // might be handy to know if we were early or late
             if (lapsedTimeSinceBeat <= moveWindowSeconds)
             {
                 Debug.Log($"Moving after beat: {lapsedTimeSinceBeat}");
+                blockedTime = beatManager.LastBeatTime + moveWindowSeconds;
                 MoveOnBeat();
             }
             else if (timeUntilNextBeat <= moveWindowSeconds)
             {
                 Debug.Log($"Moving before beat: {timeUntilNextBeat}");
+                blockedTime = beatManager.NextBeatTime + moveWindowSeconds;
                 MoveOnBeat();
             }
         }

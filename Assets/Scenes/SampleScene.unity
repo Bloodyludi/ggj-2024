@@ -1457,7 +1457,7 @@ MonoBehaviour:
   gameBPM: 30
   BeatDebug: {fileID: 1525656265}
   gameController: {fileID: 407178550}
-  moveWindowTimePercent: 10
+  moveWindowTimePercent: 30
 --- !u!4 &1153162662
 Transform:
   m_ObjectHideFlags: 0

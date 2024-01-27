@@ -11,8 +11,8 @@ public class BeatManager : MonoBehaviour
     [SerializeField] private GameController gameController;
     [SerializeField] public float moveWindowTimePercent = 10;
 
-    [NonSerialized] public float lastBeatTime;
-    [NonSerialized] public float nextBeatTime;
+    [NonSerialized] public float LastBeatTime;
+    [NonSerialized] public float NextBeatTime;
     public float SecondsPerBeat => 60.0f / gameBPM;
 
     public void Init()
@@ -31,8 +31,8 @@ public class BeatManager : MonoBehaviour
                 OnBeatUpdate();
             }
             
-            lastBeatTime = Time.time;
-            nextBeatTime = lastBeatTime + SecondsPerBeat;
+            LastBeatTime = Time.time;
+            NextBeatTime = LastBeatTime + SecondsPerBeat;
             
             yield return new WaitForSeconds(SecondsPerBeat);
             // StartCoroutine(BeatDebugDisplay());
@@ -58,8 +58,8 @@ public class BeatManager : MonoBehaviour
     public void Update()
     {
         var currentTime = Time.time;
-        var lapsedTimeSinceBeat = currentTime - lastBeatTime;
-        var timeUntilNextBeat = nextBeatTime - currentTime;
+        var lapsedTimeSinceBeat = currentTime - LastBeatTime;
+        var timeUntilNextBeat = NextBeatTime - currentTime;
         var timeToClosestBeat = Mathf.Min(lapsedTimeSinceBeat, timeUntilNextBeat);
         var moveWindowSeconds = moveWindowTimePercent * SecondsPerBeat / 100;
         
