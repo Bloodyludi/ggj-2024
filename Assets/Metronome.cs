@@ -13,25 +13,52 @@ public class BeatManager : MonoBehaviour
     [SerializeField] private SoundManager soundManager;
     [SerializeField, Range(0, 180)] private float bpm = 120.0f;
     [Range(1, 100)] public float MoveWindowTimePercent = 10;
-
+    [SerializeField] public bool shouldPerformTicks;
     private double beatInterval;
-    private bool  beatReady;
+    private bool beatReady;
 
     public float SecondsPerBeat => 60.0f / bpm;
     public float LastBeatTime { get; set; }
     public int BeatCounter { get; set; }
     public double MoveWindowSeconds => MoveWindowTimePercent * beatInterval / 100;
     [HideInInspector] public double NextBeatTime;
+    private GameController gameController;
 
     private void Start()
     {
-        // Initialize beat timing
+        InitMetronome();
+    }
+
+    public void SetBPM(int bpm)
+    {
+        this.bpm = bpm;
+    }
+
+
+    private void InitMetronome()
+    {
         beatInterval = 60.0 / bpm;
         NextBeatTime = AudioSettings.dspTime + beatInterval;
     }
 
+    private void Awake()
+    {
+        this.gameController = FindObjectOfType<GameController>();
+    }
+
     private void Update()
     {
+        if (gameController.IsGameOver)
+        {
+            return;
+        }
+
+        if (shouldPerformTicks == false)
+        {
+            InitMetronome();
+            return;
+        }
+
         double currentTime = AudioSettings.dspTime;
 
         UpdateBeatDebug(currentTime); // Update the cube's color
@@ -39,7 +66,7 @@ public class BeatManager : MonoBehaviour
         if (currentTime >= NextBeatTime && !beatReady)
         {
             OnBeat?.Invoke();
-            soundManager.PlaySfx(SoundManager.Sfx.DebugBeat3,1);
+            soundManager.PlaySfx(SoundManager.Sfx.DebugBeat3, 1);
             LastBeatTime = Time.time;
             BeatCounter++;
             beatReady = true;
@@ -83,3 +110,4 @@ public class BeatManager : MonoBehaviour
         }
     }
 }
+

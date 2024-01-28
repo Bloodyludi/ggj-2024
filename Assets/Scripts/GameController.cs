@@ -42,6 +42,8 @@ public class GameController : MonoBehaviour
 
     private IEnumerator StartMatch()
     {
+        soundManager.PlayMusic();
+        beatManager.shouldPerformTicks = true;
         while (true)
         {
             var timeLeft = matchDurationSeconds - matchTimeElapsed;
@@ -69,6 +71,7 @@ public class GameController : MonoBehaviour
 
     public void GameOver()
     {
+        beatManager.shouldPerformTicks = false;
         PauseGame(true);
         gameOverScreen.Show(gameResult);
         IsGameOver = true;

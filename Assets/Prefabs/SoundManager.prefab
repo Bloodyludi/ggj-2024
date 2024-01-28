@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1525656269
 Transform:
   m_ObjectHideFlags: 0
@@ -248,10 +248,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 254cf644049d64925a48415e28f74499, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  beatManager: {fileID: 2139582239}
   musicSource: {fileID: 4655915615986428310}
   gameSounds:
   - music: {fileID: 8300000, guid: aeb4a5a5df2048c47b1e7e70a152bbf3, type: 3}
-    delay: 0
+    delay: 1.3
+    bpm: 115
+  - music: {fileID: 8300000, guid: 725f9525456763a41bd250609a79bffc, type: 3}
+    delay: 2
+    bpm: 0
+  - music: {fileID: 8300000, guid: 4a4282ee603184842b790956efdd13e3, type: 3}
+    delay: 2
+    bpm: 0
   carrotHit:
   - {fileID: 8300000, guid: 44ea19417e23de0449438111ccf15b4e, type: 3}
   - {fileID: 8300000, guid: b410ceededa0b16458bb25a480a1f60e, type: 3}
@@ -295,6 +303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BeatDebug: {fileID: 1525656265}
   soundManager: {fileID: 4655915615986428297}
-  bpm: 115
+  bpm: 140
   MoveWindowTimePercent: 45
+  shouldPerformTicks: 0
   NextBeatTime: 0

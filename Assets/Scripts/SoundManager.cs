@@ -8,6 +8,15 @@ public class SyncedSounds
 {
     public AudioClip music;
     public float delay;
+    public int bpm;
+}
+
+public enum SongDifficulty
+{
+    easyPeasy = 0,
+    ratDance = 1,
+    pesticide = 2,
+    ratZap = 3
 }
 
 [RequireComponent(typeof(AudioSource))]
@@ -28,7 +37,7 @@ public class SoundManager : MonoBehaviour
         DebugBeat2,
         DebugBeat3
     }
-
+    [SerializeField]private BeatManager beatManager;
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private List<SyncedSounds> gameSounds;
     private SyncedSounds currentGameSound;
@@ -49,6 +58,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private List<AudioClip> debugBeat3;
 
     private Dictionary<Sfx, List<AudioClip>> sfxMap = new();
+    
 
     public void Init(int musicIndex = 0)
     {
@@ -72,39 +82,15 @@ public class SoundManager : MonoBehaviour
             currentGameSound = gameSounds[musicIndex];
             musicSource.clip = currentGameSound.music;
             musicSource.loop = true;
-            musicSource.Play();
+            beatManager.SetBPM(currentGameSound.bpm);
         }
-       
     }
 
-    public void SpeedUpMusic(float pitch)
+    public void PlayMusic()
     {
-        musicSource.pitch = Mathf.Lerp(musicSource.pitch, pitch, 0.5f);
+        musicSource.PlayDelayed(currentGameSound.delay);
     }
 
-    public AudioSource PlaySfxLoop(Sfx sound)
-    {
-        var sfx = GetSfxClip(sound);
-        var sfxSource = gameObject.AddComponent<AudioSource>();
-
-        sfxSource.clip = sfx;
-        sfxSource.loop = true;
-        sfxSource.Play();
-
-        return sfxSource;
-    }
-
-    public void StopSfxLoop(AudioSource source)
-    {
-        if (source == null)
-        {
-            return;
-        }
-
-        source.loop = false;
-        source.Stop();
-        Destroy(source);
-    }
 
     public void PlaySfx(Sfx sound, float volumeScale = 3.5f)
     {
