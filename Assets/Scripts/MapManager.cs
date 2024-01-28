@@ -59,11 +59,11 @@ public partial class MapManager : MonoBehaviour
     private void AddListeners()
     {
         beatManager = FindObjectOfType<BeatManager>();
-        beatManager.OnBeatUpdate -= ResolveBoardCollisions;
-        beatManager.OnBeatUpdate += ResolveBoardCollisions;
+        beatManager.OnBeat -= ResolveBoardCollisions;
+        beatManager.OnBeat += ResolveBoardCollisions;
 
-        beatManager.OnBeatUpdate -= UpdateDeadlyTilePositions;
-        beatManager.OnBeatUpdate += UpdateDeadlyTilePositions;
+        beatManager.OnBeat -= DeadlyTilePositions;
+        beatManager.OnBeat += DeadlyTilePositions;
     }
 
     private void ResolveBoardCollisions()

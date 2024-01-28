@@ -3,7 +3,7 @@ using UnityEngine;
 
 public partial class MapManager : MonoBehaviour
 {
-    public void UpdateDeadlyTilePositions()
+    public void DeadlyTilePositions()
     {
         List<DancefloorTile> updated = new List<DancefloorTile>();
         foreach (var tile in tiles)
