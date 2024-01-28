@@ -1415,6 +1415,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1525656265, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2139582239, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: bpm
       value: 120
