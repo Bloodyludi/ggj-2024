@@ -890,13 +890,16 @@ MonoBehaviour:
     movementDirection: {x: -1, y: 0}
   - spawnTimeSeconds: 30
     spawnPosition: {x: 1, y: 6}
-    movementDirection: {x: 1, y: 0}
+    movementDirection: {x: -1, y: 0}
   - spawnTimeSeconds: 35
     spawnPosition: {x: 6, y: 4}
     movementDirection: {x: 0, y: -1}
   - spawnTimeSeconds: 40
     spawnPosition: {x: 5, y: 4}
     movementDirection: {x: -1, y: 0}
+  - spawnTimeSeconds: 45
+    spawnPosition: {x: 14, y: 6}
+    movementDirection: {x: 1, y: 0}
 --- !u!1 &848623340
 GameObject:
   m_ObjectHideFlags: 0
