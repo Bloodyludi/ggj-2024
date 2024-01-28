@@ -133,7 +133,7 @@ public partial class PlayerController
     }
 
 
-    private void CheckPlayedMoved()
+    private void CheckPlayerMoved()
     {
         if (moveRecordTime < beatManager.LastBeatTime - beatManager.MoveWindowSeconds)
         {

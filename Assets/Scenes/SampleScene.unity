@@ -568,7 +568,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.6257563
+  orthographic size: 7.96875
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -663,6 +663,12 @@ MonoBehaviour:
   dancefloorTilePrefab: {fileID: 1187912064430790250, guid: 93d905a34ee374258ac658413d1be319, type: 3}
   width: 15
   height: 7
+  deadlyTiles:
+  - {x: 2, y: 2}
+  - {x: 4, y: 4}
+  - {x: 6, y: 6}
+  deadlyDirs:
+  - {x: 1, y: 0}
   tiles: []
 --- !u!1 &1097533919
 GameObject:
@@ -742,7 +748,7 @@ MonoBehaviour:
   gameBPM: 109
   BeatDebug: {fileID: 1525656265}
   gameController: {fileID: 407178550}
-  MoveWindowTimePercent: 10
+  MoveWindowTimePercent: 15
 --- !u!4 &1153162662
 Transform:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public partial class MapManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public partial class MapManager : MonoBehaviour
     private Dictionary<Vector2Int, GameObject> spawnedHustles = new Dictionary<Vector2Int, GameObject>();
     [SerializeField] private int width = 5;
     [SerializeField] private int height = 8;
+    [SerializeField] private Vector2Int[] deadlyTiles;
 
     public float TileSize => dancefloorTilePrefab.TileSize;
 
@@ -41,7 +43,9 @@ public partial class MapManager : MonoBehaviour
                 tile.SetPosition(x, y);
 
                 // Create a deadly tile for testing
-                //tile.SetDeadly(x == 2 && y == 2 || x == 2 && y == 3 || x == 2 && y == 4);
+                var deadly = deadlyTiles.Any(v => v.x == x && v.y == y);
+                tile.SetDeadly(deadly);
+                tile.movementDirection = new Vector2Int(Random.Range(0,3), Random.Range(0,3));
 
                 tiles[GetTileIndex(tile.position)] = tile;
             }
