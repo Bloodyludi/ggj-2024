@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Numerics;
 using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
-using Vector3 = UnityEngine.Vector3;
 
 public partial class PlayerController
 {
@@ -10,24 +7,15 @@ public partial class PlayerController
 
     private int recoverFromStunBeatNumber;
 
-    public void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            StunPlayer(moveDir*-1);
-        }
-    }
-
     public void StunPlayer(Vector2 direction)
     {
-        this.transform.localScale = Vector2.one;
+        transform.localScale = Vector2.one;
         if (playerState.CurrentStateEnum == PlayerStateEnum.Stunned) return;
         recoverFromStunBeatNumber = beatManager.BeatCounter + beatStunDuration;
         moveDir = direction;
-        UpdateSpriteDirection();
         beatManager.OnBeat += ResolvePlayerStun;
     }
-    
+
     public void SetPlayerFighting()
     {
         playerState.CurrentStateEnum = PlayerStateEnum.Brawl;
@@ -47,22 +35,6 @@ public partial class PlayerController
 
         playerState.CurrentStateEnum = PlayerStateEnum.Stunned;
         soundManager.PlaySfx(SoundManager.Sfx.PlayerHit);
-        RestartRoutine(Pushback(moveDir * -1));
-    }
-
-    private IEnumerator Pushback(Vector2 direction)
-    {
-        float movementDuration = beatManager.SecondsPerBeat * 0.2f;
-        var ogPos = transform.position;
-        Vector2 currentPosition = ogPos;
-        yield return PacedForLoop(movementDuration, lapsedPercent =>
-        {
-            //this.transform.position += (Vector3)direction * movementDistance * lapsedPercent;
-        });
-
-        transform.position = ogPos + (Vector3)direction * mapManager.TileSize;
-        currentMoveRoutine = null;
-        mapManager.OnPLayerPositionUpdated(this);
-        yield return null;
+        RestartRoutine(Move( moveDir));
     }
 }
