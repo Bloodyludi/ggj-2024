@@ -33,7 +33,7 @@ public partial class MapManager : MonoBehaviour
 
     private void Awake()
     {
-        beatManager = GameObject.Find("BeatManager").GetComponent<BeatManager>();
+        beatManager = GameObject.Find("SoundManager").GetComponent<BeatManager>();
         tiles = new DancefloorTile[width * height];
 
         for (var y = 0; y < height; y++)

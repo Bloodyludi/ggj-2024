@@ -36,7 +36,6 @@ public class GameController : MonoBehaviour
         isSpeedUpTriggered1 = false;
         isSpeedUpTriggered2 = false;
         soundManager.Init();
-        beatManager.Init();
         StartCoroutine(StartMatch());
 
     }

@@ -17,7 +17,7 @@ public partial class MapManager : MonoBehaviour
         {
             if (updated.Contains(tile) || !tile.isDeadly) continue;
 
-            var newDeadlyTilePos = tile.position; //+ tile.movementDirection;
+            var newDeadlyTilePos = tile.position+ tile.movementDirection;
             if (tile.position != newDeadlyTilePos)
             {
                 tile.SetDeadly(false);

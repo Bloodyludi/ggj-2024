@@ -72,7 +72,7 @@ public class SoundManager : MonoBehaviour
             currentGameSound = gameSounds[musicIndex];
             musicSource.clip = currentGameSound.music;
             musicSource.loop = true;
-            musicSource.PlayDelayed(currentGameSound.delay);
+            musicSource.Play();
         }
        
     }

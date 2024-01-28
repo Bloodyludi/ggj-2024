@@ -695,7 +695,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.9645224
+  orthographic size: 10.864509
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -967,8 +967,9 @@ MonoBehaviour:
   gameController: {fileID: 407178550}
   soundManager: {fileID: 2139582238}
   SecondsPerBeat: 0
+  <BeatCounter>k__BackingField: 0
   ResetBeatCoroutine: 0
-  PlayBeatDeBugSound: 1
+  PlayBeatDeBugSound: 0
   BeatDebug: {fileID: 1525656265}
 --- !u!4 &1153162662
 Transform:
@@ -1385,7 +1386,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
   m_PrefabInstance: {fileID: 4655915617118249446}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 4655915617118249447}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 254cf644049d64925a48415e28f74499, type: 3}
@@ -1470,7 +1471,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: gameSounds.Array.size
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: debugBeat3.Array.data[0]
@@ -1478,12 +1479,12 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: ddf3f8b457adb474eac50dbe172c402f, type: 3}
     - target: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: gameSounds.Array.data[0].delay
-      value: 0.5504587
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: gameSounds.Array.data[0].music
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 8300000, guid: 725f9525456763a41bd250609a79bffc, type: 3}
     - target: {fileID: 4655915615986428311, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -1531,5 +1532,33 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4655915615986428296, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4655915617118249448}
   m_SourcePrefab: {fileID: 100100000, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
+--- !u!1 &4655915617118249447 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4655915615986428296, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
+  m_PrefabInstance: {fileID: 4655915617118249446}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4655915617118249448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4655915617118249447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55c12d023f52d407d94841cdeac341e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundManager: {fileID: 2139582238}
+  bpm: 117
+  MoveWindowTimePercent: 20
+  NextBeatTime: 0
+  gain: 0.5
+  signatureHi: 4
+  signatureLo: 4
+  playMetronomeTick: 1
