@@ -748,7 +748,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 8.180777
+  orthographic size: 4.8780227
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -841,6 +841,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HustleCloud: {fileID: 8896741113618689104, guid: 8ae7d1190ce644f9a8d24e121dae6925, type: 3}
   dancefloor: {fileID: 306189673}
+  decorations: {fileID: 1487786218}
   dancefloorTilePrefab: {fileID: 1187912064430790250, guid: 93d905a34ee374258ac658413d1be319, type: 3}
   width: 15
   height: 7
@@ -1010,7 +1011,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b57ac11329144c8a545192fff61232a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameBPM: 109
+  gameBPM: 110
   MoveWindowSeconds: 0
   MoveWindowTimePercent: 25
   gameController: {fileID: 407178550}

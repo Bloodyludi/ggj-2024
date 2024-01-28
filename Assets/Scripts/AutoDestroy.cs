@@ -4,6 +4,6 @@ public class AutoDestroy : MonoBehaviour
 {
     private void OnDisable()
     {
-        GameObject.Destroy(this);
+        GameObject.Destroy(this.gameObject);
     }
 }

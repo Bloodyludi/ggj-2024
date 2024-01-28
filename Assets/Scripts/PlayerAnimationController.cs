@@ -5,7 +5,7 @@ public class PlayerAnimationController : MonoBehaviour
     [SerializeField] private bool isPlayerTwo;
     [SerializeField] private PlayerState playerState;
     [SerializeField] private Animator animator;
-    
+
     private static readonly int Idle = Animator.StringToHash("Idle");
     private static readonly int Up = Animator.StringToHash("Up");
     private static readonly int Down = Animator.StringToHash("Down");
@@ -14,10 +14,10 @@ public class PlayerAnimationController : MonoBehaviour
 
     private static readonly string[] States =
     {
-        "None",
+        "Idle",
         "MissedBeat",
         "Brawl",
-        "Stunned",
+        "Stun",
         "Dead",
     };
 
@@ -79,9 +79,9 @@ public class PlayerAnimationController : MonoBehaviour
         var currentState = stateEnum.ToString();
         foreach (var state in States)
         {
-            animator.SetBool(state,currentState.Equals(state));
+            animator.SetBool(state, currentState.Equals(state));
         }
-        
+
         animator.SetBool(Idle, false);
         animator.SetBool(Up, false);
         animator.SetBool(Down, false);
