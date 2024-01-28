@@ -39,6 +39,7 @@ public class BeatManager : MonoBehaviour
         if (currentTime >= NextBeatTime && !beatReady)
         {
             OnBeat?.Invoke();
+            soundManager.PlaySfx(SoundManager.Sfx.DebugBeat3,1);
             LastBeatTime = Time.time;
             BeatCounter++;
             beatReady = true;
