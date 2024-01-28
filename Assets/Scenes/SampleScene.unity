@@ -699,7 +699,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.96875
+  orthographic size: 7.9645224
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -801,15 +801,30 @@ MonoBehaviour:
   - spawnTimeSeconds: 3
     spawnPosition: {x: 3, y: 2}
     movementDirection: {x: 1, y: 0}
-  - spawnTimeSeconds: 5
+  - spawnTimeSeconds: 6
     spawnPosition: {x: 7, y: 3}
     movementDirection: {x: 0, y: 1}
-  - spawnTimeSeconds: 8
+  - spawnTimeSeconds: 9
     spawnPosition: {x: 12, y: 6}
     movementDirection: {x: 0, y: -1}
-  - spawnTimeSeconds: 14
+  - spawnTimeSeconds: 15
     spawnPosition: {x: 13, y: 3}
     movementDirection: {x: 1, y: 0}
+  - spawnTimeSeconds: 20
+    spawnPosition: {x: 11, y: 1}
+    movementDirection: {x: 0, y: 1}
+  - spawnTimeSeconds: 25
+    spawnPosition: {x: 9, y: 0}
+    movementDirection: {x: -1, y: 0}
+  - spawnTimeSeconds: 30
+    spawnPosition: {x: 1, y: 6}
+    movementDirection: {x: 1, y: 0}
+  - spawnTimeSeconds: 35
+    spawnPosition: {x: 6, y: 4}
+    movementDirection: {x: 0, y: -1}
+  - spawnTimeSeconds: 40
+    spawnPosition: {x: 5, y: 4}
+    movementDirection: {x: -1, y: 0}
 --- !u!1 &848623340
 GameObject:
   m_ObjectHideFlags: 0

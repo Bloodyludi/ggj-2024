@@ -15,19 +15,20 @@ public partial class MapManager : MonoBehaviour
 {
     public void UpdateDeadlyTiles()
     {
-        List<DancefloorTile> updated = new List<DancefloorTile>();
-        MoveDeadlyTiles(updated);
+        MoveDeadlyTiles();
         ResolvePlayerDeaths();
         SpawnNewTiles();
     }
 
-    private void MoveDeadlyTiles(List<DancefloorTile> updated)
+    private void MoveDeadlyTiles()
     {
+        var updated = new List<DancefloorTile>();
+        
         foreach (var tile in tiles)
         {
             if (updated.Contains(tile) || !tile.isDeadly) continue;
 
-            var newDeadlyTilePos = tile.position + tile.movementDirection;
+            var newDeadlyTilePos = FindFreePosition(tile.position + tile.movementDirection, tile.movementDirection);
             if (tile.position != newDeadlyTilePos)
             {
                 tile.SetDeadly(false);
@@ -39,6 +40,23 @@ public partial class MapManager : MonoBehaviour
         }
     }
 
+    private Vector2Int FindFreePosition(Vector2Int position, Vector2Int movementDirection)
+    {
+        var targetPositon = position;
+        while (true)
+        {
+            var newTile = tiles[GetTileIndex(targetPositon)];
+            if (newTile.isDeadly)
+            {
+                targetPositon += movementDirection;
+            }
+            else
+            {
+                return targetPositon;
+            }
+        }
+    }
+    
     private void ResolvePlayerDeaths()
     {
         var deadlyTiles = tiles.Where(x => x.isDeadly).Select(t => new Vector2Int(t.position.y, t.position.x)).ToArray();
@@ -65,7 +83,8 @@ public partial class MapManager : MonoBehaviour
 
         foreach (var sp in tilesToSpawn)
         {
-            var tile = tiles[GetTileIndex(sp.spawnPosition)];
+            var targetPos = FindFreePosition(sp.spawnPosition, sp.movementDirection);
+            var tile = tiles[GetTileIndex(targetPos)];
             tile.SetDeadly(true);
             tile.movementDirection = sp.movementDirection;
         }
