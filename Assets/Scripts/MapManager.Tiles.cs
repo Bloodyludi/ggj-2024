@@ -48,7 +48,7 @@ public partial class MapManager : MonoBehaviour
             var newTile = tiles[GetTileIndex(targetPositon)];
             if (newTile.isDeadly)
             {
-                targetPositon += movementDirection;
+                targetPositon = newTile.position + movementDirection;
             }
             else
             {
