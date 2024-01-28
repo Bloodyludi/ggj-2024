@@ -17,6 +17,8 @@ public class PlayerLocalAnimationController : MonoBehaviour
             var transformLocalPosition = ogPos + Vector2.up * jumpCurve.Evaluate(lapsedPercent);
             this.transform.localPosition = transformLocalPosition;
         });
+        var transformLocalPosition = ogPos + Vector2.up * jumpCurve.Evaluate(1);
+        this.transform.localPosition = transformLocalPosition;
     }
 
 
@@ -29,6 +31,8 @@ public class PlayerLocalAnimationController : MonoBehaviour
             var transformLocalPosition = ogPos + Vector2.up * moveDownCurve.Evaluate(lapsedPercent);
             this.transform.localPosition = transformLocalPosition;
         });
+        var transformLocalPosition = ogPos + Vector2.up * moveDownCurve.Evaluate(1);
+        this.transform.localPosition = transformLocalPosition;
     }
 
     public IEnumerator MoveUp(float duration)
@@ -40,6 +44,9 @@ public class PlayerLocalAnimationController : MonoBehaviour
             var transformLocalPosition = ogPos + Vector2.up * moveUpCurve.Evaluate(lapsedPercent);
             this.transform.localPosition = transformLocalPosition;
         });
+
+        var transformLocalPosition = ogPos + Vector2.up * moveUpCurve.Evaluate(1);
+        this.transform.localPosition = transformLocalPosition;
     }
 
     private IEnumerator PacedForLoop(float duration, Action<float> onLapsedPercent)
