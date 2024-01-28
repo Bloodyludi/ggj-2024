@@ -25,6 +25,7 @@ public class BeatManager : MonoBehaviour
     {
         while (gameController.IsGameOver == false)
         {
+//            Debug.Log($"Beat!");
             if (OnBeatUpdate != null)
             {
                 OnBeatUpdate.Invoke();
