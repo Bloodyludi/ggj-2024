@@ -98,7 +98,7 @@ public partial class MapManager : MonoBehaviour
     {
         if (TileOccupationDictionary.ContainsKey(oldPlayerTile) && TileOccupationDictionary[oldPlayerTile].Contains(player))
         {
-            Debug.Log($"removing {player.name} from {oldPlayerTile}");
+            // Debug.Log($"removing {player.name} from {oldPlayerTile}");
             TileOccupationDictionary[oldPlayerTile].Remove(player);
         }
 

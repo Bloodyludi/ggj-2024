@@ -12,6 +12,7 @@ public class PlayerAnimationController : MonoBehaviour
     private static readonly int Down = Animator.StringToHash("Down");
     private static readonly int Left = Animator.StringToHash("Left");
     private static readonly int Right = Animator.StringToHash("Right");
+    private static readonly int Dead = Animator.StringToHash("Dead");
 
     private static readonly string[] Actions =
     {
@@ -63,7 +64,8 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void UpdateWalking()
     {
-        animator.SetBool(Idle, !playerState.IsWalking);
+        animator.SetBool(Dead,playerState.CurrentAction == PlayerAction.Dead);
+        animator.SetBool(Idle, playerState.CurrentAction != PlayerAction.Dead && !playerState.IsWalking);
         animator.SetBool(Up, playerState.WalkDirection.y > 0);
         animator.SetBool(Down, playerState.WalkDirection.y < 0);
         animator.SetBool(Left, playerState.WalkDirection.x > 0);
@@ -72,6 +74,11 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void OnPlayerActionChanged(PlayerAction action)
     {
+        if (action == PlayerAction.Dead)
+        {
+            animator.SetBool(Dead,true);
+        }
+        
         var currentActionStr = $"{action.ToString()}Action";
         foreach (var actionStr in Actions)
         {

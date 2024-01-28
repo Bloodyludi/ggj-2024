@@ -3,7 +3,6 @@ using UnityEngine;
 
 public partial class MapManager : MonoBehaviour
 {
-
     public void UpdateDeadlyTilePositions()
     {
         List<DancefloorTile> updated = new List<DancefloorTile>();
@@ -18,6 +17,17 @@ public partial class MapManager : MonoBehaviour
                 var newTile = tiles[GetTileIndex(newDeadlyTilePos)];
                 newTile.SetDeadly(true);
                 updated.Add(newTile);
+
+                TileOccupationDictionary.TryGetValue(new Vector2Int(newTile.position.y, newTile.position.x), out var players);
+                if (players != null && players.Count > 0)
+                {
+                    foreach (var player in players)
+                    {
+                        player.Kill();
+                    }
+
+                    players.Clear();
+                }
             }
         }
     }

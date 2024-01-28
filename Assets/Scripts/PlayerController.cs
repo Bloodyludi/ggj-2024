@@ -57,4 +57,16 @@ public partial class PlayerController : MonoBehaviour
         currentMoveRoutine =routine;
         StartCoroutine(currentMoveRoutine);
     }
+
+    public void Kill()
+    {
+        Debug.Log($"Player died: {transform.name} pos: {mapManager.WorldToMap(transform.position)}");
+        
+        playerState.CurrentAction = PlayerAction.Dead;
+        
+        if (currentMoveRoutine != null)
+        {
+            StopCoroutine(currentMoveRoutine);
+        }
+    }
 }
