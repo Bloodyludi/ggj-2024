@@ -793,13 +793,19 @@ MonoBehaviour:
   dancefloorTilePrefab: {fileID: 1187912064430790250, guid: 93d905a34ee374258ac658413d1be319, type: 3}
   width: 15
   height: 7
-  deadlyTiles:
-  - {x: 0, y: 0}
-  - {x: 2, y: 0}
-  - {x: 3, y: 0}
-  - {x: 5, y: 0}
-  - {x: 6, y: 0}
-  tiles: []
+  deadlyTileSpawns:
+  - spawnTimeSeconds: 3
+    spawnPosition: {x: 3, y: 2}
+    movementDirection: {x: 1, y: 0}
+  - spawnTimeSeconds: 5
+    spawnPosition: {x: 7, y: 3}
+    movementDirection: {x: 0, y: 1}
+  - spawnTimeSeconds: 8
+    spawnPosition: {x: 12, y: 6}
+    movementDirection: {x: 0, y: -1}
+  - spawnTimeSeconds: 14
+    spawnPosition: {x: 13, y: 3}
+    movementDirection: {x: 1, y: 0}
 --- !u!1 &848623340
 GameObject:
   m_ObjectHideFlags: 0
