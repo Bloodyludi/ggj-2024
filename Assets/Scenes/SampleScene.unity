@@ -452,6 +452,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4898110192394476538, guid: 88b3eb239849d4154917562bdc830718, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8965317338885454742, guid: 88b3eb239849d4154917562bdc830718, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -695,7 +699,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.9645224
+  orthographic size: 7.96875
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
