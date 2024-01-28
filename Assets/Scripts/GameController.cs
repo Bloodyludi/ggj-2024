@@ -6,7 +6,8 @@ public enum GameResult
 {
     Player1Wins,
     Player2Wins,
-    Draw
+    Draw,
+    Lose
 }
 
 public class GameController : MonoBehaviour
@@ -26,6 +27,7 @@ public class GameController : MonoBehaviour
     private bool isSpeedUpTriggered2;
 
     public bool IsGameOver { get; private set; } = false;
+    public GameResult gameResult = GameResult.Draw;
 
     private void Awake()
     {
@@ -36,6 +38,7 @@ public class GameController : MonoBehaviour
         soundManager.Init();
         beatManager.Init();
         StartCoroutine(StartMatch());
+
     }
 
     private IEnumerator StartMatch()
@@ -49,7 +52,7 @@ public class GameController : MonoBehaviour
 
             if (matchTimeElapsed > matchDurationSeconds)
             {
-                GameOver();
+                EvaluateGameOver();
 
                 yield break;
             }
@@ -61,8 +64,42 @@ public class GameController : MonoBehaviour
     public void GameOver()
     {
         PauseGame(true);
-        gameOverScreen.Show(mapManager.GetGameResult());
+        gameOverScreen.Show(gameResult);
         IsGameOver = true;
+    }
+
+    private void EvaluateGameOver()
+    {
+        var p1Dead = playerManager.player1State.CurrentStateEnum == PlayerStateEnum.Dead;
+        var p2Dead = playerManager.player2State.CurrentStateEnum == PlayerStateEnum.Dead;
+        var p1ComboCount = playerManager.player1State.ComboCounter;
+        var p2ComboCount = playerManager.player2State.ComboCounter;
+        if (p1Dead && p2Dead)
+        {
+            gameResult = GameResult.Lose;
+        }
+        else if (p1Dead)
+        {
+            gameResult = GameResult.Player2Wins;
+        }
+        else if (p2Dead)
+        {
+            gameResult = GameResult.Player1Wins;
+        }
+        else if (p1ComboCount > p2ComboCount)
+        {
+            gameResult = GameResult.Player1Wins;
+        }
+        else if (p1ComboCount < p2ComboCount)
+        {
+            gameResult = GameResult.Player2Wins;
+        }
+        else
+        {
+            gameResult = GameResult.Draw;
+        }
+        
+        GameOver();
     }
 
     public void PauseGame(bool pause)

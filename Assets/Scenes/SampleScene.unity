@@ -369,18 +369,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 718180232, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_Color.b
-      value: 0.03529412
-      objectReference: {fileID: 0}
-    - target: {fileID: 718180232, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_Color.g
-      value: 0.20392159
-      objectReference: {fileID: 0}
-    - target: {fileID: 718180232, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_Color.r
-      value: 0.2627451
-      objectReference: {fileID: 0}
     - target: {fileID: 1607363535, guid: 88b3eb239849d4154917562bdc830718, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -396,47 +384,11 @@ PrefabInstance:
     - target: {fileID: 1607363535, guid: 88b3eb239849d4154917562bdc830718, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2014277238, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2014277238, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2014277238, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.r
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 527827838190537947, guid: 88b3eb239849d4154917562bdc830718, type: 3}
       propertyPath: gameController
       value: 
       objectReference: {fileID: 407178550}
-    - target: {fileID: 527827838190537947, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: pauseAction.m_Type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 527827838190537947, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: pauseAction.m_ExpectedControlType
-      value: Button
-      objectReference: {fileID: 0}
-    - target: {fileID: 527827838190537947, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: pauseAction.m_SingletonActionBindings.Array.data[0].m_Interactions
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1284725446322127966, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1284725446322127966, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1284725446322127966, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.r
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1813005117116397005, guid: 88b3eb239849d4154917562bdc830718, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -467,42 +419,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2871066605806629358, guid: 88b3eb239849d4154917562bdc830718, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4898110192394476538, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_Alpha
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5809608004848099893, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5846654732258365787, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5846654732258365787, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5846654732258365787, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7005942408847491936, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7005942408847491936, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7005942408847491936, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_fontColor.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8663175362112335038, guid: 88b3eb239849d4154917562bdc830718, type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8965317338885454742, guid: 88b3eb239849d4154917562bdc830718, type: 3}
@@ -748,7 +664,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 8.180777
+  orthographic size: 7.9645224
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -966,6 +882,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapManager: {fileID: 565207020}
   playerPrefab: {fileID: 1612666963757044635, guid: 30e5f31927b8b4fd09a964402ecb3a7c, type: 3}
+  player1State: {fileID: 0}
+  player2State: {fileID: 0}
 --- !u!4 &1097533921
 Transform:
   m_ObjectHideFlags: 0

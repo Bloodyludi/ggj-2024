@@ -6,8 +6,8 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private MapManager mapManager;
     [SerializeField] private GameObject playerPrefab;
 
-    private PlayerState player1State;
-    private PlayerState player2State;
+    public PlayerState player1State;
+    public PlayerState player2State;
 
     private void Start()
     {

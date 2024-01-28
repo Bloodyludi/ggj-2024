@@ -47,7 +47,8 @@ public partial class MapManager : MonoBehaviour
                 tile.SetDeadly(deadly);
                 if (deadly)
                 {
-                    tile.movementDirection = new Vector2Int(Random.Range(-1,2), Random.Range(-1,2));
+                    var rnd = Random.Range(-1, 2);
+                    tile.movementDirection = Random.Range(0, 2) == 0 ? new Vector2Int(rnd, 0) : new Vector2Int(0, 1);
                 }
 
                 tiles[GetTileIndex(tile.position)] = tile;
@@ -89,11 +90,6 @@ public partial class MapManager : MonoBehaviour
                 directions.RemoveAt(0);
             }
         }
-    }
-
-    public GameResult GetGameResult()
-    {
-        return GameResult.Draw;
     }
 
     public void OnPLayerPositionUpdated(PlayerController player)

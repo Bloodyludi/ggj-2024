@@ -11,6 +11,7 @@ public class GameOverScreen : MonoBehaviour
     private static readonly int Player1Won = Animator.StringToHash("Player1Won");
     private static readonly int Player2Won = Animator.StringToHash("Player2Won");
     private static readonly int Draw = Animator.StringToHash("Draw");
+    private static readonly int Lose = Animator.StringToHash("Lose");
 
     public void Show(GameResult result)
     {
@@ -18,6 +19,7 @@ public class GameOverScreen : MonoBehaviour
         animator.SetBool(Player1Won, result == GameResult.Player1Wins);
         animator.SetBool(Player2Won, result == GameResult.Player2Wins);
         animator.SetBool(Draw, result == GameResult.Draw);
+        animator.SetBool(Lose, result == GameResult.Lose);
 
         replayButton.Select();
     }

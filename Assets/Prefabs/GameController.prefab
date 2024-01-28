@@ -44,9 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bec1462a0b3ae4a77a9386dcf2fd6268, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerManager: {fileID: 0}
   mapManager: {fileID: 0}
   gameOverScreen: {fileID: 0}
   countdownTimer: {fileID: 0}
   soundManager: {fileID: 0}
-  matchDurationSeconds: 100
+  beatManager: {fileID: 0}
+  matchDurationSeconds: 60
   musicSpeedUpThreshold: 30
+  gameResult: 2
