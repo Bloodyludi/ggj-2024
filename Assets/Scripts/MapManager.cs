@@ -16,6 +16,7 @@ public partial class MapManager : MonoBehaviour
     [SerializeField] private TileSpawnConfig[] deadlyTileSpawns;
 
     public float TileSize => dancefloorTilePrefab.TileSize;
+    public Vector2 Dimensions => new Vector2(width,height);
 
     [NonSerialized] public DancefloorTile[] tiles;
 
