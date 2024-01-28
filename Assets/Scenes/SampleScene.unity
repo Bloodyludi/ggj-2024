@@ -878,11 +878,11 @@ MonoBehaviour:
   width: 15
   height: 7
   deadlyTiles:
-  - {x: 2, y: 2}
-  - {x: 4, y: 4}
-  - {x: 6, y: 6}
-  - {x: 7, y: 4}
-  - {x: 9, y: 3}
+  - {x: 0, y: 0}
+  - {x: 2, y: 0}
+  - {x: 3, y: 0}
+  - {x: 5, y: 0}
+  - {x: 6, y: 0}
   tiles: []
 --- !u!1 &848623340
 GameObject:
@@ -1050,7 +1050,7 @@ MonoBehaviour:
   soundManager: {fileID: 2139582238}
   SecondsPerBeat: 0
   ResetBeatCoroutine: 0
-  PlayBeatDeBugSound: 0
+  PlayBeatDeBugSound: 1
   BeatDebug: {fileID: 1525656265}
 --- !u!4 &1153162662
 Transform:
@@ -1552,7 +1552,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: gameSounds.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: debugBeat3.Array.data[0]
@@ -1565,7 +1565,7 @@ PrefabInstance:
     - target: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: gameSounds.Array.data[0].music
       value: 
-      objectReference: {fileID: 8300000, guid: afce892151cbc401cad8699f70bee262, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 4655915615986428311, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: m_RootOrder
       value: 6
