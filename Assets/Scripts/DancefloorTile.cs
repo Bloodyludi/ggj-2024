@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class DancefloorTile : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class DancefloorTile : MonoBehaviour
     public Vector2Int position = new(0,0);
     [NonSerialized] public Vector2Int movementDirection;
     private BeatManager beatManager;
+    private float pulsatingJitter;
 
     public float TileSize => ren.sprite.bounds.size.x;
 
@@ -39,17 +41,24 @@ public class DancefloorTile : MonoBehaviour
 
     private IEnumerator StartPulsing()
     {
+        pulsatingJitter = Random.Range(0f, 0.2f);
+
         while (true)
         {
             var t = (float)(1f - (beatManager.NextBeatTime - AudioSettings.dspTime) / beatManager.SecondsPerBeat);
 
             if (isDeadly)
             {
-                ren.color = Color.Lerp(Color.grey, Color.white, t);
+                ren.color = Color.Lerp(Color.white* (0.8f - pulsatingJitter), Color.white, t);
             }
             else
             {
-                ren.color = Color.Lerp(Color.white, Color.grey, t);
+                ren.color = Color.Lerp(Color.white, Color.white* (0.8f - pulsatingJitter), t);
+            }
+
+            if (t >= 0.96f)
+            {
+                pulsatingJitter = Random.Range(0f, 0.2f);
             }
 
             yield return null;
