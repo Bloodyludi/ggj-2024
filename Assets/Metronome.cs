@@ -23,6 +23,8 @@ public class BeatManager : MonoBehaviour
     public double MoveWindowSeconds => MoveWindowTimePercent * beatInterval / 100;
     [HideInInspector] public double NextBeatTime;
     private GameController gameController;
+    private double TimeToStart;
+
 
     private void Start()
     {
@@ -34,11 +36,11 @@ public class BeatManager : MonoBehaviour
         this.bpm = bpm;
     }
 
-
     private void InitMetronome()
     {
+        TimeToStart = Time.timeAsDouble;
         beatInterval = 60.0 / bpm;
-        NextBeatTime = AudioSettings.dspTime + beatInterval;
+        NextBeatTime = GetCurrentTime() + beatInterval;
     }
 
     private void Awake()
@@ -59,10 +61,14 @@ public class BeatManager : MonoBehaviour
             return;
         }
 
-        double currentTime = AudioSettings.dspTime;
+        double currentTime = GetCurrentTime();
 
-        UpdateBeatDebug(currentTime); // Update the cube's color
+        UpdateBeatDebug(currentTime);
+        DoAccurateBeat(currentTime);
+    }
 
+    private void DoAccurateBeat(double currentTime)
+    {
         if (currentTime >= NextBeatTime && !beatReady)
         {
             OnBeat?.Invoke();
@@ -70,6 +76,7 @@ public class BeatManager : MonoBehaviour
             LastBeatTime = Time.time;
             BeatCounter++;
             beatReady = true;
+
             StartCoroutine(ScheduleAction(OnPreBeat, (float)(beatInterval - MoveWindowSeconds * 0.5f)));
             StartCoroutine(ScheduleAction(OnPostBeat, (float)MoveWindowSeconds * 0.5f));
         }
@@ -81,10 +88,23 @@ public class BeatManager : MonoBehaviour
         action?.Invoke();
     }
 
+    public double GetCurrentTime()
+    {
+#if !UNITY_WEBGL
+        return AudioSettings.dspTime;
+#else
+        return Time.timeAsDouble - TimeToStart;
+#endif
+    }
 
+#if !UNITY_WEBGL
     void OnAudioFilterRead(float[] data, int channels)
     {
-        double currentTime = AudioSettings.dspTime;
+#else
+    public void FixedUpdate()
+    {
+#endif
+        double currentTime = GetCurrentTime();
 
         if (currentTime >= NextBeatTime)
         {
@@ -110,4 +130,3 @@ public class BeatManager : MonoBehaviour
         }
     }
 }
-

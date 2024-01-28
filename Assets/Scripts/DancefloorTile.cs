@@ -9,10 +9,10 @@ public class DancefloorTile : MonoBehaviour
     public Sprite brightSprite;
     public Sprite deadlySprite;
     public SpriteRenderer ren;
-    
+
     public bool isDeadly;
 
-    public Vector2Int position = new(0,0);
+    public Vector2Int position = new(0, 0);
     [NonSerialized] public Vector2Int movementDirection;
     private BeatManager beatManager;
     private float pulsatingJitter;
@@ -45,15 +45,22 @@ public class DancefloorTile : MonoBehaviour
 
         while (true)
         {
-            var t = (float)(1f - (beatManager.NextBeatTime - AudioSettings.dspTime) / beatManager.SecondsPerBeat);
+            var t = (float)(1f - (beatManager.NextBeatTime -
+#if !UNITY_WEBGL
+                                  AudioSettings.dspTime
+#else
+                                  Time.timeAsDouble
+#endif
+
+                ) / beatManager.SecondsPerBeat);
 
             if (isDeadly)
             {
-                ren.color = Color.Lerp(Color.white, Color.white* (0.8f - pulsatingJitter), t);
+                ren.color = Color.Lerp(Color.white, Color.white * (0.8f - pulsatingJitter), t);
             }
             else
             {
-                ren.color = Color.Lerp(Color.white* (0.8f - pulsatingJitter), Color.white, t);
+                ren.color = Color.Lerp(Color.white * (0.8f - pulsatingJitter), Color.white, t);
             }
 
             if (t >= 0.96f)

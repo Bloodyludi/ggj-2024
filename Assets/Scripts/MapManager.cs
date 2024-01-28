@@ -85,7 +85,6 @@ public partial class MapManager : MonoBehaviour
 
     public void OnPLayerPositionUpdated(PlayerController player)
     {
-        Debug.Log(WorldToMap(player.transform.position));
         ResolvePlayerDeaths();
         HandleSameTileOccupancy(player);
     }
