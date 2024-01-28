@@ -26,16 +26,16 @@ public class GameController : MonoBehaviour
     private bool isSpeedUpTriggered2;
 
     public bool IsGameOver { get; private set; } = false;
-    
+
     private void Awake()
     {
         Time.timeScale = 1f;
 
         isSpeedUpTriggered1 = false;
         isSpeedUpTriggered2 = false;
+        soundManager.Init();
         beatManager.Init();
         StartCoroutine(StartMatch());
-
     }
 
     private IEnumerator StartMatch()
@@ -46,7 +46,7 @@ public class GameController : MonoBehaviour
             countdownTimer.UpdateTimeLeft(timeLeft);
 
             matchTimeElapsed += Time.deltaTime;
-            
+
             if (matchTimeElapsed > matchDurationSeconds)
             {
                 GameOver();

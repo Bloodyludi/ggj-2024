@@ -13,7 +13,6 @@ public partial class PlayerController
         if (playerState.CurrentStateEnum == PlayerStateEnum.Stunned) return;
         recoverFromStunBeatNumber = beatManager.BeatCounter + beatStunDuration;
         moveDir = direction;
-        beatManager.OnBeat += ResolvePlayerStun;
     }
 
     public void SetPlayerFighting()
@@ -21,6 +20,8 @@ public partial class PlayerController
         playerState.CurrentStateEnum = PlayerStateEnum.Brawl;
         moveDir = Vector2.zero;
         this.transform.localScale = Vector2.zero;
+        soundManager.PlaySfx(SoundManager.Sfx.PlayerHit);
+        beatManager.OnPostBeat += ResolvePlayerStun;
     }
 
     private void ResolvePlayerStun()
@@ -34,7 +35,6 @@ public partial class PlayerController
         }
 
         playerState.CurrentStateEnum = PlayerStateEnum.Stunned;
-        soundManager.PlaySfx(SoundManager.Sfx.PlayerHit);
         RestartRoutine(Move( moveDir));
     }
 }

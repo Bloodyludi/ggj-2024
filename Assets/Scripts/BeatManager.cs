@@ -11,79 +11,90 @@ public class BeatManager : MonoBehaviour
     [SerializeField] private float gameBPM = 120;
     [SerializeField] private GameObject BeatDebug;
     [SerializeField] private GameController gameController;
-
-    [Range(1,100)] public float MoveWindowTimePercent = 10;
+    [SerializeField] private SoundManager soundManager;
+    [Range(1, 100)] public float MoveWindowTimePercent = 10;
     [NonSerialized] public float LastBeatTime;
     [NonSerialized] public float NextBeatTime;
     public float SecondsPerBeat => 60.0f / gameBPM;
     public float MoveWindowSeconds => MoveWindowTimePercent * SecondsPerBeat / 100f;
     public int BeatCounter { get; private set; }
-    
+
 
     public void Init()
     {
         NextBeatTime = Time.time + SecondsPerBeat;
-        
-        // StartCoroutine(StartBeatLoop());
+        soundManager.PlayGameSound();
+        OnBeat -= DebugBeat;
+        OnBeat += DebugBeat;
+        StartCoroutine(StartBeatLoop());
     }
 
-    // private IEnumerator StartBeatLoop()
-    // {
-    //     while (gameController.IsGameOver == false)
-    //     {
-    //         OnBeat?.Invoke();
-    //
-    //         LastBeatTime = Time.time;
-    //         NextBeatTime = LastBeatTime + SecondsPerBeat;
-    //         BeatCounter++;
-    //
-    //         yield return new WaitForSeconds(MoveWindowSeconds);
-    //
-    //         OnPostBeat?.Invoke();
-    //
-    //         yield return new WaitForSeconds(SecondsPerBeat - MoveWindowSeconds * 2);
-    //         
-    //         OnPreBeat?.Invoke();
-    //         
-    //         yield return new WaitForSeconds(MoveWindowSeconds);
-    //     }
-    //
-    //     BeatCounter = 0;
-    // }
+    public void DebugBeat()
+    {
+        soundManager.PlaySfx(SoundManager.Sfx.DebugBeat3);
+    }
+
+    private IEnumerator StartBeatLoop()
+    {
+        while (gameController.IsGameOver == false )
+        {
+            OnBeat?.Invoke();
+
+            LastBeatTime = Time.time;
+            NextBeatTime = LastBeatTime + SecondsPerBeat;
+            BeatCounter++;
+
+            yield return new WaitForSeconds(MoveWindowSeconds);
+
+            OnPostBeat?.Invoke();
+
+            yield return new WaitForSeconds(SecondsPerBeat - MoveWindowSeconds * 2);
+
+            OnPreBeat?.Invoke();
+
+            yield return new WaitForSeconds(MoveWindowSeconds);
+        }
+
+        BeatCounter = 0;
+    }
 
     public void Update()
     {
         var currentTime = Time.time;
         var timeOfLastUpdate = Time.time - Time.deltaTime;
-
+/*
         var preBeatTime = NextBeatTime - MoveWindowSeconds;
         if (currentTime >= preBeatTime && timeOfLastUpdate <= preBeatTime)
         {
             OnPreBeat?.Invoke();
-            
+            //soundManager.PlaySfx(SoundManager.Sfx.DebugBeat1);
+
         }
-        
+
         if (currentTime >= NextBeatTime && timeOfLastUpdate <= NextBeatTime)
         {
             OnBeat?.Invoke();
-            
+            soundManager.PlaySfx(SoundManager.Sfx.DebugBeat3);
+
             LastBeatTime = currentTime;
             NextBeatTime = LastBeatTime + SecondsPerBeat;
             BeatCounter++;
         }
-        
+
         var postBeatTime = LastBeatTime + MoveWindowSeconds;
         if (currentTime >= postBeatTime && timeOfLastUpdate <= postBeatTime)
         {
             OnPostBeat?.Invoke();
-        }
-        
+            //soundManager.PlaySfx(SoundManager.Sfx.DebugBeat2);
+
+        }*/
+
         // var currentTime = Time.time;
         var lapsedTimeSinceBeat = currentTime - LastBeatTime;
         var timeUntilNextBeat = NextBeatTime - currentTime;
         var timeToClosestBeat = Mathf.Min(lapsedTimeSinceBeat, timeUntilNextBeat);
         var moveWindowSeconds = MoveWindowTimePercent * SecondsPerBeat / 100;
-        
+
         if (timeToClosestBeat <= moveWindowSeconds)
         {
             BeatDebug.GetComponent<Renderer>().material.color = Color.green;

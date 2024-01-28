@@ -1,7 +1,14 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+[Serializable]
+ public class SyncedSounds
+ {
+     public AudioClip music;
+     public float delay;
+ }
 [RequireComponent(typeof(AudioSource))]
 public class SoundManager : MonoBehaviour
 {
@@ -15,11 +22,16 @@ public class SoundManager : MonoBehaviour
         Pulled,
         Landing,
         Charging,
-        Throw
+        Throw,
+        DebugBeat1,
+        DebugBeat2,
+        DebugBeat3
     }
 
     [SerializeField] private AudioSource musicSource;
-    [SerializeField] private AudioClip gameSound;
+    [SerializeField] private List<SyncedSounds> gameSounds;
+    private SyncedSounds currentGameSound;
+
 
     [Header("SFX")] [SerializeField] private List<AudioClip> carrotHit;
     [SerializeField] private List<AudioClip> carrotBounceWater;
@@ -31,9 +43,13 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private List<AudioClip> carrotThrow;
     [SerializeField] private List<AudioClip> carrotCharging;
 
+    [SerializeField] private List<AudioClip> debugBeat1;
+    [SerializeField] private List<AudioClip> debugBeat2;
+    [SerializeField] private List<AudioClip> debugBeat3;
+
     private Dictionary<Sfx, List<AudioClip>> sfxMap = new();
 
-    private void Awake()
+    public void Init()
     {
         sfxMap.Clear();
         sfxMap.Add(Sfx.PlayerHit, carrotHit);
@@ -45,15 +61,20 @@ public class SoundManager : MonoBehaviour
         sfxMap.Add(Sfx.Landing, carrotLanding);
         sfxMap.Add(Sfx.Throw, carrotThrow);
         sfxMap.Add(Sfx.Charging, carrotCharging);
-    }
-
-    private void Start()
-    {
-        musicSource.clip = gameSound;
+        sfxMap.Add(Sfx.DebugBeat1, debugBeat1);
+        sfxMap.Add(Sfx.DebugBeat2, debugBeat2);
+        sfxMap.Add(Sfx.DebugBeat3, debugBeat3);
+        
+        
+        currentGameSound = gameSounds[0];
+        musicSource.clip = currentGameSound.music;
         musicSource.loop = true;
-        musicSource.Play();
     }
 
+    public void PlayGameSound()
+    {
+        musicSource.PlayDelayed(currentGameSound.delay);
+    }
     public void SpeedUpMusic(float pitch)
     {
         musicSource.pitch = Mathf.Lerp(musicSource.pitch, pitch, 0.5f);
@@ -99,4 +120,6 @@ public class SoundManager : MonoBehaviour
         var sounds = sfxMap[sound];
         return sounds[Random.Range(0, sounds.Count)];
     }
+
+
 }
