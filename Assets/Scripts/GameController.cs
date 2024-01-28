@@ -49,6 +49,13 @@ public class GameController : MonoBehaviour
 
             matchTimeElapsed += Time.deltaTime;
 
+            if (matchTimeElapsed > 5f &&
+                playerManager.player1State.CurrentStateEnum == PlayerStateEnum.Dead
+                && playerManager.player2State.CurrentStateEnum == PlayerStateEnum.Dead)
+            {
+                Time.timeScale = Mathf.Lerp(Time.timeScale, 6f, Time.deltaTime * 0.2f);
+            }
+
             if (matchTimeElapsed > matchDurationSeconds)
             {
                 EvaluateGameOver();

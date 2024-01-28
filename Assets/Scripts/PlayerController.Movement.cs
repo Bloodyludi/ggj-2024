@@ -26,13 +26,13 @@ public partial class PlayerController
 
             if (lapsedTimeSinceBeat <= moveWindowSeconds)
             {
-                Debug.Log($"Moving after beat: {lapsedTimeSinceBeat}");
+                // Debug.Log($"Moving after beat: {lapsedTimeSinceBeat}");
                 blockedTime = beatManager.LastBeatTime + moveWindowSeconds;
                 MoveOnBeat();
             }
             else if (timeUntilNextBeat <= moveWindowSeconds)
             {
-                Debug.Log($"Moving before beat: {timeUntilNextBeat}");
+                // Debug.Log($"Moving before beat: {timeUntilNextBeat}");
                 blockedTime = (float)(beatManager.NextBeatTime + moveWindowSeconds);
                 MoveOnBeat();
             }

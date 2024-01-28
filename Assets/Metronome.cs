@@ -25,7 +25,6 @@ public class BeatManager : MonoBehaviour
 
     private void Start()
     {
-
         // Initialize beat timing
         beatInterval = 60.0 / bpm;
         NextBeatTime = AudioSettings.dspTime + beatInterval;

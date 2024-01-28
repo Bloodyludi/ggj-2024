@@ -59,7 +59,6 @@ public partial class MapManager : MonoBehaviour
         beatManager = FindObjectOfType<BeatManager>();
         beatManager.OnPostBeat -= ResolveBoardCollisions;
         beatManager.OnPostBeat += ResolveBoardCollisions;
-
         beatManager.OnPostBeat -= UpdateDeadlyTiles;
         beatManager.OnPostBeat += UpdateDeadlyTiles;
     }
@@ -86,6 +85,7 @@ public partial class MapManager : MonoBehaviour
     public void OnPLayerPositionUpdated(PlayerController player)
     {
         Debug.Log(WorldToMap(player.transform.position));
+        ResolvePlayerDeaths();
         HandleSameTileOccupancy(player);
     }
 
@@ -147,6 +147,7 @@ public partial class MapManager : MonoBehaviour
     public Vector2Int WorldToMap(Vector2 worldPos)
     {
         var boardOrigin = GetBoardOrigin();
+        boardOrigin += Vector2.one * TileSize * 0.5f;
 
         float boardWith = this.width * TileSize;
         float boardHeight = this.height * TileSize;
