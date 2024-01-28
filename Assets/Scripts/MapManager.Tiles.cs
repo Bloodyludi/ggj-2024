@@ -41,12 +41,17 @@ public partial class MapManager : MonoBehaviour
 
     private void ResolvePlayerDeaths()
     {
-        var deadlyTiles = tiles.Where(x => x.isDeadly).Select(x => x.position);
+        var deadlyTiles = tiles.Where(x => x.isDeadly).Select(t => new Vector2Int(t.position.y, t.position.x)).ToArray();
 
-        Dictionary<Vector2Int, List<PlayerController>> occupancy = GetTileOccupancy();
-        foreach (var tile in deadlyTiles)
+        for (var i = 0; i < playersInMap.Count; i++)
         {
-            KillPlayersAtTile(occupancy, tile);
+            var player = playersInMap[i];
+            var playerPos = WorldToMap(player.transform.position);
+            if (deadlyTiles.Contains(playerPos))
+            {
+                player.Kill();
+                playersInMap.Remove(player);
+            }
         }
     }
 
@@ -63,21 +68,6 @@ public partial class MapManager : MonoBehaviour
             var tile = tiles[GetTileIndex(sp.spawnPosition)];
             tile.SetDeadly(true);
             tile.movementDirection = sp.movementDirection;
-        }
-    }
-
-    private void KillPlayersAtTile(Dictionary<Vector2Int, List<PlayerController>> occupancy, Vector2Int tile)
-    {
-        occupancy.TryGetValue(new Vector2Int(tile.y, tile.x), out var players);
-        if (players != null && players.Count > 0)
-        {
-            foreach (var player in players)
-            {
-                player.Kill();
-                playersInMap.Remove(player);
-            }
-
-            players.Clear();
         }
     }
 
