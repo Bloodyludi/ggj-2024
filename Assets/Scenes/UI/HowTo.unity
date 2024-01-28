@@ -548,12 +548,12 @@ MonoBehaviour:
     Play with a friend!
 
 
-    -Survive
-    the dancefloor untill time runs out
+    -You
+    can only move to the rythem of the music
 
 
-    -You can only move to the rythem of
-    the music'
+    -Survive the dancfloor or have
+    a high combo to win'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 913844595ce81054d8b42761911ba18e, type: 2}
   m_sharedMaterial: {fileID: 7480152211162618466, guid: 913844595ce81054d8b42761911ba18e, type: 2}
@@ -835,8 +835,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.38425198}
   m_AnchorMax: {x: 0.5, y: 0.38425198}
-  m_AnchoredPosition: {x: -171.22, y: -44}
-  m_SizeDelta: {x: 453.1486, y: 167.8072}
+  m_AnchoredPosition: {x: -171.22, y: -60.8}
+  m_SizeDelta: {x: 453.15, y: 134.21}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &826103110
 MonoBehaviour:
