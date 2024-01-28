@@ -219,3 +219,4 @@ public partial class MapManager : MonoBehaviour
 
         return currentPosition;
     }
+}
