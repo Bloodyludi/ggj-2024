@@ -1,9 +1,7 @@
 # LAB RATS
-[![Watch the Video]([URL_of_image_thumbnail](https://github.com/Bloodyludi/ggj-2024/assets/63453493/d1d338ff-dfe4-4be6-833b-d8e789ee5f9c))](https://github.com/Bloodyludi/ggj-2024/assets/63453493/b54f8870-d8f9-406b-92d6-471b77fd0c1e)
+[![Watch the Video]((https://github.com/Bloodyludi/ggj-2024/assets/63453493/d1d338ff-dfe4-4be6-833b-d8e789ee5f9c))](https://github.com/Bloodyludi/ggj-2024/assets/63453493/b54f8870-d8f9-406b-92d6-471b77fd0c1e)
 
-
-
-
+###  🔼 Play with Audio 🔼
 
 ## Overview
 LAB RATS is a 2-player game where players embody 2 lab rats trying to survive a wicked experiment. The rats need to dance to the beat of the song while also dodging the hazardous tiles. 
