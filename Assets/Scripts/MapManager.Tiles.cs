@@ -18,7 +18,7 @@ public partial class MapManager : MonoBehaviour
                 newTile.SetDeadly(true);
                 updated.Add(newTile);
 
-                TileOccupationDictionary.TryGetValue(new Vector2Int(newTile.position.y, newTile.position.x), out var players);
+                GetTileOccupancy().TryGetValue(new Vector2Int(newTile.position.y, newTile.position.x), out var players);
                 if (players != null && players.Count > 0)
                 {
                     foreach (var player in players)
