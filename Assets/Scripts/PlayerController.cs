@@ -6,7 +6,7 @@ public partial class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerState playerState;
     [SerializeField] private PlayerInput playerInput;
-    
+    [SerializeField] private PlayerLocalAnimationController playerLocalAnimationController;
     private BeatManager beatManager;
     private Vector2 moveDir = Vector2.zero;
     
