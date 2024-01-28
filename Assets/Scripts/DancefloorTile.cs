@@ -49,11 +49,11 @@ public class DancefloorTile : MonoBehaviour
 
             if (isDeadly)
             {
-                ren.color = Color.Lerp(Color.white* (0.8f - pulsatingJitter), Color.white, t);
+                ren.color = Color.Lerp(Color.white, Color.white* (0.8f - pulsatingJitter), t);
             }
             else
             {
-                ren.color = Color.Lerp(Color.white, Color.white* (0.8f - pulsatingJitter), t);
+                ren.color = Color.Lerp(Color.white* (0.8f - pulsatingJitter), Color.white, t);
             }
 
             if (t >= 0.96f)
