@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public partial class MapManager : MonoBehaviour
 {
@@ -14,11 +13,11 @@ public partial class MapManager : MonoBehaviour
     private Dictionary<Vector2Int, GameObject> spawnedHustles = new Dictionary<Vector2Int, GameObject>();
     [SerializeField] private int width = 5;
     [SerializeField] private int height = 8;
-    [SerializeField] private Vector2Int[] deadlyTiles;
+    [SerializeField] private TileSpawnConfig[] deadlyTileSpawns;
 
     public float TileSize => dancefloorTilePrefab.TileSize;
 
-    public DancefloorTile[] tiles;
+    [NonSerialized] public DancefloorTile[] tiles;
 
     private List<PlayerController> playersInMap = new List<PlayerController>();
 
@@ -43,15 +42,6 @@ public partial class MapManager : MonoBehaviour
                 var tile = Instantiate(dancefloorTilePrefab, dancefloor);
                 tile.SetPosition(x, y);
 
-                // Create a deadly tile for testing
-                var deadly = deadlyTiles.Any(v => v.x == x && v.y == y);
-                tile.SetDeadly(deadly);
-                if (deadly)
-                {
-                    var rnd = Random.Range(-1, 2);
-                    tile.movementDirection = Random.Range(0, 2) == 0 ? new Vector2Int(rnd, 0) : new Vector2Int(0, 1);
-                }
-
                 tiles[GetTileIndex(tile.position)] = tile;
             }
         }
@@ -70,8 +60,8 @@ public partial class MapManager : MonoBehaviour
         beatManager.OnPostBeat -= ResolveBoardCollisions;
         beatManager.OnPostBeat += ResolveBoardCollisions;
 
-        beatManager.OnBeat -= UpdateDeadlyTilePositions;
-        beatManager.OnBeat += UpdateDeadlyTilePositions;
+        beatManager.OnPostBeat -= UpdateDeadlyTiles;
+        beatManager.OnPostBeat += UpdateDeadlyTiles;
     }
 
     private void ResolveBoardCollisions()
