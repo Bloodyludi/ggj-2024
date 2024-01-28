@@ -879,9 +879,12 @@ MonoBehaviour:
   - spawnTimeSeconds: 9
     spawnPosition: {x: 12, y: 6}
     movementDirection: {x: 0, y: -1}
-  - spawnTimeSeconds: 15
+  - spawnTimeSeconds: 14
     spawnPosition: {x: 13, y: 3}
     movementDirection: {x: 1, y: 0}
+  - spawnTimeSeconds: 16.4
+    spawnPosition: {x: 2, y: 4}
+    movementDirection: {x: 0, y: -1}
   - spawnTimeSeconds: 20
     spawnPosition: {x: 11, y: 1}
     movementDirection: {x: 0, y: 1}
