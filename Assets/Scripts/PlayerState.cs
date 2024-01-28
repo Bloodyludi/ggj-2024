@@ -55,6 +55,7 @@ public class PlayerState : MonoBehaviour
             currentState = value;
         }
     }
+
     public event Action<int> OnOrientationChanged;
 
     private int playerOrientation = 1;
@@ -74,7 +75,11 @@ public class PlayerState : MonoBehaviour
     }
 
     public Vector2 WalkDirection { get; set; }
-    
-    public bool CanWalk => InputEnabled && CurrentStateEnum != PlayerStateEnum.Stunned && CurrentStateEnum != PlayerStateEnum.Dead;
+
+    public bool CanWalk => InputEnabled &&
+                           CurrentStateEnum != PlayerStateEnum.Stunned
+                           && CurrentStateEnum != PlayerStateEnum.Brawl
+                           && CurrentStateEnum != PlayerStateEnum.Dead;
+
     public bool IsPlayer2 { get; set; }
 }

@@ -1,5 +1,8 @@
 using System.Collections;
+using System.Numerics;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 public partial class PlayerController
 {
@@ -17,10 +20,19 @@ public partial class PlayerController
 
     public void StunPlayer(Vector2 direction)
     {
+        this.transform.localScale = Vector2.one;
         if (playerState.CurrentStateEnum == PlayerStateEnum.Stunned) return;
         recoverFromStunBeatNumber = beatManager.BeatCounter + beatStunDuration;
         moveDir = direction;
+        UpdateSpriteDirection();
         beatManager.OnBeat += ResolvePlayerStun;
+    }
+    
+    public void SetPlayerFighting()
+    {
+        playerState.CurrentStateEnum = PlayerStateEnum.Brawl;
+        moveDir = Vector2.zero;
+        this.transform.localScale = Vector2.zero;
     }
 
     private void ResolvePlayerStun()

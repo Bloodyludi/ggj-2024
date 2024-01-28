@@ -49,14 +49,18 @@ public partial class PlayerController
         playerState.ComboCounter++;
         
         RestartRoutine( Move(moveDir));
+        UpdateSpriteDirection();
+    }
 
+    private void UpdateSpriteDirection()
+    {
         playerState.WalkDirection = moveDir;
         if (Mathf.Abs(moveDir.x) > 0)
         {
             playerState.PlayerOrientation = (int)Mathf.Sign(moveDir.x);
         }
     }
-    
+
     private IEnumerator PacedForLoop( float duration, Action<float> onLapsedPercent )
     {
         for (float time = 0; time <= duration; time += Time.deltaTime)
