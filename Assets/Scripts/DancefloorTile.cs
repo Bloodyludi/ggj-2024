@@ -41,7 +41,7 @@ public class DancefloorTile : MonoBehaviour
 
     private IEnumerator StartPulsing()
     {
-        pulsatingJitter = Random.Range(0f, 0.2f);
+        pulsatingJitter = Random.Range(0f, isDeadly ? 0.1f : 0.3f);
 
         while (true)
         {
@@ -58,7 +58,7 @@ public class DancefloorTile : MonoBehaviour
 
             if (t >= 0.96f)
             {
-                pulsatingJitter = Random.Range(0f, 0.2f);
+                pulsatingJitter = Random.Range(0f, isDeadly ? 0.1f : 0.3f);
             }
 
             yield return null;
