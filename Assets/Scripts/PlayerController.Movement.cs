@@ -5,12 +5,6 @@ using UnityEngine.InputSystem;
 
 public partial class PlayerController
 {
-    [Header("Movement Animations")] [SerializeField]
-    private AnimationCurve horizontalJumpAnimationCurve;
-
-    [SerializeField] private AnimationCurve verticalUpwardsJumpAnimationCurve;
-    [SerializeField] private AnimationCurve verticalDownwardsJumpAnimationCurve;
-
     private float moveRecordTime = 0;
     private IEnumerator currentMoveRoutine;
 
@@ -103,6 +97,7 @@ public partial class PlayerController
         {
             StartCoroutine(playerLocalAnimationController.Jump(movementDuration));
         }
+
         switch (direction.y)
         {
             case > 0:
@@ -113,25 +108,6 @@ public partial class PlayerController
                 break;
         }
     }
-
-    private Vector2 MoveVertically(Vector2 direction, float lapsedPercent, Vector2 currentPosition, Vector3 ogPos)
-    {
-        float y;
-        switch (direction.y)
-        {
-            case > 0:
-                y = verticalUpwardsJumpAnimationCurve.Evaluate(lapsedPercent);
-                currentPosition.y = ogPos.y + y * mapManager.TileSize;
-                break;
-            case < 0:
-                y = verticalDownwardsJumpAnimationCurve.Evaluate(lapsedPercent);
-                currentPosition.y = ogPos.y - y * mapManager.TileSize;
-                break;
-        }
-
-        return currentPosition;
-    }
-
 
     private void CheckPlayerMoved()
     {
