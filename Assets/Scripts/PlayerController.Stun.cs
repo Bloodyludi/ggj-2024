@@ -20,14 +20,14 @@ public partial class PlayerController
         if (playerState.CurrentStateEnum == PlayerStateEnum.Stunned) return;
         recoverFromStunBeatNumber = beatManager.BeatCounter + beatStunDuration;
         moveDir = direction;
-        beatManager.OnBeatUpdate += ResolvePlayerStun;
+        beatManager.OnBeat += ResolvePlayerStun;
     }
 
     private void ResolvePlayerStun()
     {
         if (beatManager.BeatCounter > recoverFromStunBeatNumber)
         {
-            beatManager.OnBeatUpdate -= ResolvePlayerStun;
+            beatManager.OnBeat -= ResolvePlayerStun;
             playerState.CurrentStateEnum = PlayerStateEnum.None;
             moveDir = Vector2.zero;
             return;

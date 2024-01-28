@@ -46,6 +46,8 @@ public partial class PlayerController
 
     private void MoveOnBeat()
     {
+        playerState.ComboCounter++;
+        
         RestartRoutine( Move(moveDir));
 
         playerState.WalkDirection = moveDir;
@@ -118,5 +120,13 @@ public partial class PlayerController
         currentPosition.x = ogPos.x + lapsedPercent * direction.x * mapManager.TileSize;
         currentPosition.y = ogPos.y + y * mapManager.TileSize;
         return currentPosition;
+    }
+
+    private void CheckPlayedMoved()
+    {
+        if (moveRecordTime < beatManager.LastBeatTime - beatManager.MoveWindowSeconds)
+        {
+            playerState.ComboCounter = 0;
+        }
     }
 }

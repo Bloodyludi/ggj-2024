@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class BeatManager : MonoBehaviour
 {
-    public event Action OnBeatUpdate;
+    public event Action OnPreBeat;
+    public event Action OnBeat;
+    public event Action OnPostBeat;
 
     [SerializeField] private float gameBPM = 120;
     [SerializeField] private GameObject BeatDebug;
@@ -14,6 +16,7 @@ public class BeatManager : MonoBehaviour
     [NonSerialized] public float LastBeatTime;
     [NonSerialized] public float NextBeatTime;
     public float SecondsPerBeat => 60.0f / gameBPM;
+    public float MoveWindowSeconds => MoveWindowTimePercent * SecondsPerBeat / 100;
     public int BeatCounter { get; private set; }
 
     public void Init()
@@ -26,16 +29,21 @@ public class BeatManager : MonoBehaviour
         while (gameController.IsGameOver == false)
         {
 //            Debug.Log($"Beat!");
-            if (OnBeatUpdate != null)
-            {
-                OnBeatUpdate.Invoke();
-            }
+            OnBeat?.Invoke();
 
             LastBeatTime = Time.time;
             NextBeatTime = LastBeatTime + SecondsPerBeat;
             BeatCounter++;
 
-            yield return new WaitForSeconds(SecondsPerBeat);
+            yield return new WaitForSeconds(MoveWindowSeconds);
+
+            OnPostBeat?.Invoke();
+
+            yield return new WaitForSeconds(SecondsPerBeat - MoveWindowSeconds * 2);
+            
+            OnPreBeat?.Invoke();
+            
+            yield return new WaitForSeconds(MoveWindowSeconds);
         }
 
         BeatCounter = 0;

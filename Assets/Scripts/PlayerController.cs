@@ -21,6 +21,9 @@ public partial class PlayerController : MonoBehaviour
         beatManager = GameObject.Find("BeatManager").GetComponent<BeatManager>();
         mapManager = GameObject.Find("Map").GetComponent<MapManager>();
         mapManager.RegisterPlayer(this);
+
+        beatManager.OnPostBeat -= CheckPlayedMoved;
+        beatManager.OnPostBeat += CheckPlayedMoved;
     }
 
     private void OnEnable()

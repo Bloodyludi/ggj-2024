@@ -12,6 +12,34 @@ public enum PlayerStateEnum
 
 public class PlayerState : MonoBehaviour
 {
+    [SerializeField] private ComboCounter comboCounterLabel;
+    
+    public int ComboCounter
+    {
+        get => comboCounter;
+        set
+        {
+            comboCounter = value;
+            comboCounterLabel.UpdateComboCount(comboCounter);
+
+            if (CurrentStateEnum == PlayerStateEnum.Dead ||
+                CurrentStateEnum == PlayerStateEnum.Brawl ||
+                CurrentStateEnum == PlayerStateEnum.Stunned)
+            {
+                return;
+            }
+            
+            if (comboCounter == 0)
+            {
+                CurrentStateEnum = PlayerStateEnum.MissedBeat;
+            }
+            else
+            {
+                CurrentStateEnum = PlayerStateEnum.None;
+            }
+        }
+    }
+
     public bool InputEnabled { get; set; } = true;
 
     public event Action<PlayerStateEnum> OnStateChanged;
@@ -30,6 +58,7 @@ public class PlayerState : MonoBehaviour
     public event Action<int> OnOrientationChanged;
 
     private int playerOrientation = 1;
+    private int comboCounter;
 
     public int PlayerOrientation
     {
