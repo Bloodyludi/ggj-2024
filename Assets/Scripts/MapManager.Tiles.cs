@@ -24,8 +24,8 @@ public partial class MapManager : MonoBehaviour
                     foreach (var player in players)
                     {
                         player.Kill();
+                        playersInMap.Remove(player);
                     }
-
                     players.Clear();
                 }
             }
