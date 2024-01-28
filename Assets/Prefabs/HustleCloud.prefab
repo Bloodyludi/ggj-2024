@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 90987279602948977}
   - component: {fileID: 7906571730933773797}
-  m_Layer: 6
+  m_Layer: 4
   m_Name: Cloud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 8896741113346513954}
   - component: {fileID: 8896741113346513952}
   - component: {fileID: 2095701832641343149}
-  m_Layer: 6
+  m_Layer: 4
   m_Name: HustleSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -158,8 +158,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
-  m_Sprite: {fileID: 2043991720, guid: 6e1d13780484bf84fa841e9afceaf200, type: 3}
+  m_SortingOrder: 100
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -167,7 +167,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &2095701832641343149
@@ -200,7 +200,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8896741113618689105}
   - component: {fileID: 4014452516072635308}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: HustleCloud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
