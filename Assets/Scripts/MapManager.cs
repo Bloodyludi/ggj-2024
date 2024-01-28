@@ -8,6 +8,7 @@ public partial class MapManager : MonoBehaviour
 {
     [SerializeField] private GameObject HustleCloud;
     public Transform dancefloor;
+    public Transform decorations;
     private BeatManager beatManager;
     [SerializeField] private DancefloorTile dancefloorTilePrefab;
     private Dictionary<Vector2Int, GameObject> spawnedHustles = new Dictionary<Vector2Int, GameObject>();
@@ -66,8 +67,8 @@ public partial class MapManager : MonoBehaviour
     private void AddListeners()
     {
         beatManager = FindObjectOfType<BeatManager>();
-        beatManager.OnBeat -= ResolveBoardCollisions;
-        beatManager.OnBeat += ResolveBoardCollisions;
+        beatManager.OnPostBeat -= ResolveBoardCollisions;
+        beatManager.OnPostBeat += ResolveBoardCollisions;
 
         beatManager.OnBeat -= UpdateDeadlyTilePositions;
         beatManager.OnBeat += UpdateDeadlyTilePositions;
@@ -94,7 +95,8 @@ public partial class MapManager : MonoBehaviour
 
     public void OnPLayerPositionUpdated(PlayerController player)
     {
-        HandleSameTileOccupancy();
+        Debug.Log(WorldToMap(player.transform.position));
+        HandleSameTileOccupancy(player);
     }
 
     public void RegisterPlayer(PlayerController player)
@@ -109,10 +111,10 @@ public partial class MapManager : MonoBehaviour
             .ToDictionary(x => x.Key, y => y.ToList());
     }
 
-    private void HandleSameTileOccupancy()
+    private void HandleSameTileOccupancy(PlayerController playerController)
     {
         var currentBoardOccupancy = GetTileOccupancy();
-        AddClouds(currentBoardOccupancy);
+        TryAddClouds(currentBoardOccupancy,playerController);
         CleanOldClouds(currentBoardOccupancy);
     }
 
@@ -134,18 +136,19 @@ public partial class MapManager : MonoBehaviour
         }
     }
 
-    private void AddClouds(Dictionary<Vector2Int, List<PlayerController>> currentBoardOccupancy)
+    private void TryAddClouds(Dictionary<Vector2Int, List<PlayerController>> currentBoardOccupancy, PlayerController controller)
     {
         foreach (var occupiedTiles in currentBoardOccupancy)
         {
-            if (occupiedTiles.Value.Count > 1)
+            if (occupiedTiles.Value.Count > 1 && spawnedHustles.ContainsKey(occupiedTiles.Key) ==false)
             {
-                var hustleCloud = GameObject.Instantiate(HustleCloud);
+                Debug.Log($"{controller.name} : triggered clouds" );
+                var hustleCloud = GameObject.Instantiate(HustleCloud,decorations.transform);
                 spawnedHustles.Add(occupiedTiles.Key, hustleCloud);
-                hustleCloud.transform.position = MapToWorld(occupiedTiles.Key.x, occupiedTiles.Key.y);
+                hustleCloud.transform.position = MapToWorld(occupiedTiles.Key.x, occupiedTiles.Key.y) + TileSize * Vector2.one * 0.5f;
                 foreach (var playerController in occupiedTiles.Value)
                 {
-                    playerController.SetPlayerFighting();
+                    playerController.SetPlayerFighting(hustleCloud.transform.position);
                 }
             }
         }
@@ -158,23 +161,61 @@ public partial class MapManager : MonoBehaviour
         float boardWith = this.width * TileSize;
         float boardHeight = this.height * TileSize;
 
-        float column = (worldPos.x - boardOrigin.x) / (boardWith - boardOrigin.x) * boardWith - 1;
-        float row = (worldPos.y - boardOrigin.y) / (boardHeight - boardOrigin.y) * boardHeight - 1;
+        float column = (worldPos.x - boardOrigin.x) / (boardWith - boardOrigin.x) * boardWith;
+        float row = (worldPos.y - boardOrigin.y) / (boardHeight - boardOrigin.y) * boardHeight;
 
         return new Vector2Int(Mathf.FloorToInt(row), Mathf.FloorToInt(column));
     }
 
     public Vector2 MapToWorld(int row, int column)
     {
+        return MapToWorld((float)row, (float)column);
+    }
+
+    public Vector2 MapToWorld(float row, float column)
+    {
         var boardOrigin = GetBoardOrigin();
-        Vector2Int cellPosition = new Vector2Int(column + 1, row + 1);
+        Vector2 cellPosition = new Vector2(column, row);
         return boardOrigin + ((Vector2)cellPosition) * TileSize;
     }
 
     private Vector2 GetBoardOrigin()
     {
         Vector2 boardOrigin = dancefloor.localToWorldMatrix * dancefloor.localPosition;
-        boardOrigin -= Vector2.one * TileSize;
+        boardOrigin -= Vector2.one * TileSize * 0.5f;
         return boardOrigin;
     }
-}
+
+    public Vector3 GetLoopPosition(Vector2 currentPosition)
+    {
+        var boardOrigin = GetBoardOrigin();
+
+        float boardWith = this.width * TileSize;
+        float boardHeight = this.height * TileSize;
+        var boardSize = new Vector2(boardWith, boardHeight);
+        var boardEnd = GetBoardOrigin() + boardSize;
+
+        Vector2 uvCoords = (currentPosition - boardOrigin).DivideVector(boardEnd - boardOrigin);
+
+        if (uvCoords.x > 1)
+        {
+            uvCoords.x -= 1;
+        }
+        else if (uvCoords.x < 0)
+        {
+            uvCoords.x += 1;
+        }
+
+        if (uvCoords.y > 1)
+        {
+            uvCoords.y -= 1;
+        }
+        else if (uvCoords.y < 0)
+        {
+            uvCoords.y += 1;
+        }
+
+        currentPosition = boardOrigin + uvCoords * boardSize;
+
+        return currentPosition;
+    }

@@ -123,6 +123,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &218129975
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 218129976}
+  m_Layer: 0
+  m_Name: VFX
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &218129976
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 218129975}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 565207019}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &231845352
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,6 +771,7 @@ Transform:
   - {fileID: 1182312891}
   - {fileID: 306189673}
   - {fileID: 1487786218}
+  - {fileID: 218129976}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -757,15 +789,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HustleCloud: {fileID: 8896741113618689104, guid: 8ae7d1190ce644f9a8d24e121dae6925, type: 3}
   dancefloor: {fileID: 306189673}
+  decorations: {fileID: 218129976}
   dancefloorTilePrefab: {fileID: 1187912064430790250, guid: 93d905a34ee374258ac658413d1be319, type: 3}
   width: 15
   height: 7
   deadlyTiles:
-  - {x: 2, y: 2}
-  - {x: 4, y: 4}
-  - {x: 6, y: 6}
-  - {x: 7, y: 4}
-  - {x: 9, y: 3}
+  - {x: 0, y: 0}
+  - {x: 2, y: 0}
+  - {x: 3, y: 0}
+  - {x: 5, y: 0}
+  - {x: 6, y: 0}
   tiles: []
 --- !u!1 &848623340
 GameObject:
@@ -928,14 +961,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b57ac11329144c8a545192fff61232a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameBPM: 109
+  gameBPM: 110
   MoveWindowSeconds: 0
   MoveWindowTimePercent: 25
   gameController: {fileID: 407178550}
   soundManager: {fileID: 2139582238}
   SecondsPerBeat: 0
   ResetBeatCoroutine: 0
-  PlayBeatDeBugSound: 0
+  PlayBeatDeBugSound: 1
   BeatDebug: {fileID: 1525656265}
 --- !u!4 &1153162662
 Transform:
@@ -1437,7 +1470,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: gameSounds.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: debugBeat3.Array.data[0]
@@ -1450,7 +1483,7 @@ PrefabInstance:
     - target: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: gameSounds.Array.data[0].music
       value: 
-      objectReference: {fileID: 8300000, guid: afce892151cbc401cad8699f70bee262, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 4655915615986428311, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
       propertyPath: m_RootOrder
       value: 6

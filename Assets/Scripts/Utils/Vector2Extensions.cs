@@ -29,4 +29,10 @@ public static class Vector2Extensions
         v.y *= a.y;
         return v;
     }
+    public static Vector2 DivideVector(this Vector2 v, Vector2 a)
+    {
+        v.x /= a.x;
+        v.y /= a.y;
+        return v;
+    }
 }

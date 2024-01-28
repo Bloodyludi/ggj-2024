@@ -6,7 +6,7 @@ public enum PlayerStateEnum
     None,
     MissedBeat,
     Brawl,
-    Stunned,
+    Stun,
     Dead,
 }
 
@@ -24,7 +24,7 @@ public class PlayerState : MonoBehaviour
 
             if (CurrentStateEnum == PlayerStateEnum.Dead ||
                 CurrentStateEnum == PlayerStateEnum.Brawl ||
-                CurrentStateEnum == PlayerStateEnum.Stunned)
+                CurrentStateEnum == PlayerStateEnum.Stun)
             {
                 return;
             }
@@ -77,7 +77,7 @@ public class PlayerState : MonoBehaviour
     public Vector2 WalkDirection { get; set; }
 
     public bool CanWalk => InputEnabled &&
-                           CurrentStateEnum != PlayerStateEnum.Stunned
+                           CurrentStateEnum != PlayerStateEnum.Stun
                            && CurrentStateEnum != PlayerStateEnum.Brawl
                            && CurrentStateEnum != PlayerStateEnum.Dead;
 

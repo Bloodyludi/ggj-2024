@@ -81,13 +81,15 @@ public partial class PlayerController
         yield return PacedForLoop(movementDuration, lapsedPercent =>
         {
             currentPosition = ogPos + moveDir * lapsedPercent * mapManager.TileSize;
-            transform.position = currentPosition;
+            transform.position =  mapManager.GetLoopPosition(currentPosition);
         });
 
         position = ogPos + (Vector2)direction * mapManager.TileSize;
+        position = mapManager.GetLoopPosition(position);
         transform.position = position;
-        currentMoveRoutine = null;
         mapManager.OnPLayerPositionUpdated(this);
+        
+        currentMoveRoutine = null;
         yield return null;
     }
 
