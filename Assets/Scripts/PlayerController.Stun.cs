@@ -37,6 +37,10 @@ public partial class PlayerController
 
     private void ResolvePlayerStun()
     {
+        if (playerState.CurrentStateEnum == PlayerStateEnum.Dead)
+        {
+            return;
+        }
         if (beatManager.BeatCounter > recoverFromStunBeatNumber)
         {
             transform.localScale = Vector2.one;
