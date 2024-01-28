@@ -33,7 +33,6 @@ public partial class PlayerController
             return;
         }
 
-        Debug.Log($"stunned {this.name} for {recoverFromStunBeatNumber - beatManager.BeatCounter} ");
         playerState.CurrentStateEnum = PlayerStateEnum.Stunned;
         soundManager.PlaySfx(SoundManager.Sfx.PlayerHit);
         RestartRoutine(Pushback(moveDir * -1));
@@ -51,6 +50,7 @@ public partial class PlayerController
 
         transform.position = ogPos + (Vector3)direction * mapManager.TileSize;
         currentMoveRoutine = null;
+        mapManager.OnPLayerPositionUpdated(this);
         yield return null;
     }
 }
