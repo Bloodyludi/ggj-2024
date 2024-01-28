@@ -20,14 +20,14 @@ public partial class MapManager : MonoBehaviour
     {
         beatManager = GameObject.Find("BeatManager").GetComponent<BeatManager>();
         tiles = new DancefloorTile[width * height];
-        
+
         for (var y = 0; y < height; y++)
         {
             for (var x = 0; x < width; x++)
             {
                 var tile = Instantiate(dancefloorTilePrefab, dancefloor);
                 tile.SetPosition(x, y);
-                
+
                 // Create a deadly tile for testing
                 tile.SetDeadly(x == 2 && y == 2 || x == 2 && y == 3 || x == 2 && y == 4);
 
@@ -64,7 +64,7 @@ public partial class MapManager : MonoBehaviour
 
             foreach (var player in occupiedCell.Value)
             {
-              //   player.StunPlayer();
+                //   player.StunPlayer();
             }
         }
     }
@@ -125,13 +125,12 @@ public partial class MapManager : MonoBehaviour
 
         return new Vector2Int(Mathf.FloorToInt(row), Mathf.FloorToInt(column));
     }
-    
+
     public Vector2 MapToWorld(int row, int column)
     {
         var boardOrigin = GetBoardOrigin();
-        Vector2Int cell = new Vector2Int(column, row);
-        return boardOrigin + (cell + Vector2.one * 0.5f) * TileSize;
-
+        Vector2 cell = new Vector2(column, row);
+        return boardOrigin + cell * TileSize;
     }
 
     private Vector2 GetBoardOrigin()
