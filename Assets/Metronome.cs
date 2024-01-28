@@ -11,7 +11,7 @@ public class BeatManager : MonoBehaviour
 
     [SerializeField] private GameObject BeatDebug; // Reference to the cube
     [SerializeField] private SoundManager soundManager;
-    [SerializeField, Range(0, 120)] private float bpm = 120.0f;
+    [SerializeField, Range(0, 180)] private float bpm = 120.0f;
     [Range(1, 100)] public float MoveWindowTimePercent = 10;
 
     private double beatInterval;
