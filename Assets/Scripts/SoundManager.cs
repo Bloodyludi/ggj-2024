@@ -49,7 +49,7 @@ public class SoundManager : MonoBehaviour
 
     private Dictionary<Sfx, List<AudioClip>> sfxMap = new();
 
-    public void Init()
+    public void Init(int musicIndex =0)
     {
         sfxMap.Clear();
         sfxMap.Add(Sfx.PlayerHit, carrotHit);
@@ -66,15 +66,13 @@ public class SoundManager : MonoBehaviour
         sfxMap.Add(Sfx.DebugBeat3, debugBeat3);
         
         
-        currentGameSound = gameSounds[0];
+        currentGameSound = gameSounds[musicIndex];
         musicSource.clip = currentGameSound.music;
         musicSource.loop = true;
-    }
-
-    public void PlayGameSound()
-    {
+        
         musicSource.PlayDelayed(currentGameSound.delay);
     }
+    
     public void SpeedUpMusic(float pitch)
     {
         musicSource.pitch = Mathf.Lerp(musicSource.pitch, pitch, 0.5f);

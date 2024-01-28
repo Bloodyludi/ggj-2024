@@ -8,35 +8,64 @@ public class BeatManager : MonoBehaviour
     public event Action OnBeat;
     public event Action OnPostBeat;
 
-    [SerializeField] private float gameBPM = 120;
-    [SerializeField] private GameObject BeatDebug;
+    [SerializeField, Range(0, 120)] private float gameBPM = 120;
+    [SerializeField, Range(0.0f, 1.0f)] public float MoveWindowSeconds;
+    [Range(1, 100)] public float MoveWindowTimePercent = 10;
+
     [SerializeField] private GameController gameController;
     [SerializeField] private SoundManager soundManager;
-    [Range(1, 100)] public float MoveWindowTimePercent = 10;
+
+    private Coroutine BeatCoroutine;
     [NonSerialized] public float LastBeatTime;
     [NonSerialized] public float NextBeatTime;
-    public float SecondsPerBeat => 60.0f / gameBPM;
-    public float MoveWindowSeconds => MoveWindowTimePercent * SecondsPerBeat / 100f;
+
+    public float SecondsPerBeat;
     public int BeatCounter { get; private set; }
 
+    [Header("Debug")] public bool ResetBeatCoroutine = false;
+    public bool PlayBeatDeBugSound = false;
+    [SerializeField] private GameObject BeatDebug;
+
+    private void OnGUI()
+    {
+        MoveWindowSeconds = MoveWindowTimePercent * SecondsPerBeat / 100f;
+        if (ResetBeatCoroutine)
+        {
+            ResetBeatCoroutine = false;
+            InitBeatValues();
+            StopCoroutine(BeatCoroutine);
+            BeatCoroutine = StartCoroutine(StartBeatLoop());
+        }
+    }
 
     public void Init()
     {
-        NextBeatTime = Time.time + SecondsPerBeat;
-        soundManager.PlayGameSound();
+        InitBeatValues();
         OnBeat -= DebugBeat;
         OnBeat += DebugBeat;
-        StartCoroutine(StartBeatLoop());
+
+
+        BeatCoroutine = StartCoroutine(StartBeatLoop());
+    }
+
+    private void InitBeatValues()
+    {
+        SecondsPerBeat = 60.0f / gameBPM;
+        NextBeatTime = Time.time + SecondsPerBeat;
+        MoveWindowSeconds = MoveWindowTimePercent * SecondsPerBeat / 100f;
     }
 
     public void DebugBeat()
     {
-        soundManager.PlaySfx(SoundManager.Sfx.DebugBeat3);
+        if (PlayBeatDeBugSound)
+        {
+            soundManager.PlaySfx(SoundManager.Sfx.DebugBeat3);
+        }
     }
 
     private IEnumerator StartBeatLoop()
     {
-        while (gameController.IsGameOver == false )
+        while (gameController.IsGameOver == false)
         {
             OnBeat?.Invoke();
 
