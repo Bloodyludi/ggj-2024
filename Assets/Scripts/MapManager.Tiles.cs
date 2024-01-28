@@ -77,7 +77,8 @@ public partial class MapManager : MonoBehaviour
     {
         var prev = beatManager.BeatCounter * beatManager.SecondsPerBeat;
         var next = (beatManager.BeatCounter + 1) * beatManager.SecondsPerBeat;
-        var tilesToSpawn = deadlyTileSpawns.Where(
+        var tilesToSpawn = deadlyTileSpawns
+            .Where(
             v => prev <= v.spawnTimeSeconds && next > v.spawnTimeSeconds
         );
 

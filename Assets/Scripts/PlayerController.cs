@@ -18,7 +18,7 @@ public partial class PlayerController : MonoBehaviour
     private void Awake()
     {
         soundManager = GameObject.FindWithTag("Sound")?.GetComponent<SoundManager>();
-        beatManager = GameObject.Find("BeatManager").GetComponent<BeatManager>();
+        beatManager = GameObject.FindObjectOfType<BeatManager>();
         mapManager = GameObject.Find("Map").GetComponent<MapManager>();
         mapManager.RegisterPlayer(this);
 
