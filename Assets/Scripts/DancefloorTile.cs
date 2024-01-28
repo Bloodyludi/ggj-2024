@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class DancefloorTile : MonoBehaviour
@@ -12,8 +13,14 @@ public class DancefloorTile : MonoBehaviour
 
     public Vector2Int position = new(0,0);
     [NonSerialized] public Vector2Int movementDirection;
+    private BeatManager beatManager;
 
     public float TileSize => ren.sprite.bounds.size.x;
+
+    private void Awake()
+    {
+        beatManager = GameObject.FindObjectOfType<BeatManager>();
+    }
 
     public void SetDeadly(bool deadly)
     {
@@ -26,6 +33,27 @@ public class DancefloorTile : MonoBehaviour
         position = new Vector2Int(x, y);
         transform.localPosition = new Vector3(x, y) * TileSize;
         UpdateSprite();
+
+        StartCoroutine(StartPulsing());
+    }
+
+    private IEnumerator StartPulsing()
+    {
+        while (true)
+        {
+            var t = (float)(1f - (beatManager.NextBeatTime - AudioSettings.dspTime) / beatManager.SecondsPerBeat);
+
+            if (isDeadly)
+            {
+                ren.color = Color.Lerp(Color.grey, Color.white, t);
+            }
+            else
+            {
+                ren.color = Color.Lerp(Color.white, Color.grey, t);
+            }
+
+            yield return null;
+        }
     }
 
     private void UpdateSprite()
