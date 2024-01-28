@@ -10,8 +10,8 @@ public class DancefloorTile : MonoBehaviour
     
     public bool isDeadly;
 
-    public Vector2Int position = new(0,0);
-    public Vector2Int movementDirection = new(1,1);
+    [NonSerialized] public Vector2Int position = new(0,0);
+    [NonSerialized] public Vector2Int movementDirection = new(0,0);
 
     public float TileSize => ren.sprite.bounds.size.x;
 

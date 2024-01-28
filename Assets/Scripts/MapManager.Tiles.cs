@@ -34,7 +34,11 @@ public partial class MapManager : MonoBehaviour
 
     public int GetTileIndex(Vector2Int position)
     {
-        var clamped = new Vector2Int(position.x % width, position.y % height);
+        var clamped = new Vector2Int(MathMod(position.x, width), MathMod(position.y, height));
         return clamped.y * width + clamped.x;
+    }
+    
+    static int MathMod(int a, int b) {
+        return (Mathf.Abs(a * b) + a) % b;
     }
 }
