@@ -87,8 +87,8 @@ public partial class PlayerController
 
         position = ogPos + (Vector3)direction * mapManager.TileSize;
         transform.position = position;
-        mapManager.OnPlayerMovementFinished(ogPos,position,this);
         currentMoveRoutine = null;
+        mapManager.OnPLayerPositionUpdated(this);
         yield return null;
     }
 

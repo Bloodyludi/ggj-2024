@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -14,7 +15,16 @@ public partial class MapManager : MonoBehaviour
 
     public DancefloorTile[] tiles;
 
-    public Dictionary<Vector2Int, List<PlayerController>> TileOccupationDictionary = new Dictionary<Vector2Int, List<PlayerController>>();
+    private List<PlayerController> playersInMap = new List<PlayerController>();
+
+    private List<Vector2> stunDirections { get; } =
+    new List<Vector2>()
+    {
+        new Vector2(0, 1),
+        new Vector2(1, 0),
+        new Vector2(0, -1),
+        new Vector2(-1, 0),
+    };
 
     private void Awake()
     {
@@ -55,16 +65,20 @@ public partial class MapManager : MonoBehaviour
 
     private void ResolveBoardCollisions()
     {
-        foreach (var occupiedCell in TileOccupationDictionary)
+        var tileOccupationDictionary = GetTileOccupancy();
+        foreach (var occupiedCell in tileOccupationDictionary)
         {
-            if (occupiedCell.Value == null || occupiedCell.Value.Count <= 1)
+            if (occupiedCell.Value.Count <= 1)
             {
                 continue;
             }
 
+            var directions = stunDirections.OrderBy(_ => Guid.NewGuid()).ToList();
             foreach (var player in occupiedCell.Value)
             {
-                //   player.StunPlayer();
+                player.StunPlayer(directions[0]);
+                directions.RemoveAt(0);
+
             }
         }
     }
@@ -74,43 +88,34 @@ public partial class MapManager : MonoBehaviour
         return GameResult.Draw;
     }
 
-    public void OnPlayerMovementFinished(Vector2 from, Vector2 to, PlayerController player)
+    public void OnPLayerPositionUpdated(PlayerController player)
     {
-        var newPlayerTile = WorldToMap(to);
-        var oldPlayerTile = WorldToMap(from);
-
-        MovePlayerToTile(player, oldPlayerTile, newPlayerTile);
-        HandleSameTileOccupancy(newPlayerTile);
+        HandleSameTileOccupancy();
+    }
+    
+    public void RegisterPlayer(PlayerController player)
+    {
+        playersInMap.Add(player);
     }
 
-    private void HandleSameTileOccupancy(Vector2Int newPlayerTile)
+    private Dictionary<Vector2Int, List<PlayerController>> GetTileOccupancy()
     {
-        if (TileOccupationDictionary[newPlayerTile].Count > 1)
+        return playersInMap
+            .GroupBy(x => WorldToMap(x.transform.position), y => y)
+            .ToDictionary(x => x.Key, y => y.ToList());
+    }
+
+    private void HandleSameTileOccupancy()
+    {
+        foreach (var occupiedTiles in GetTileOccupancy())
         {
-            foreach (var stunnedPlayer in TileOccupationDictionary[newPlayerTile])
+            if (occupiedTiles.Value.Count >= 1)
             {
-                //HandleFightCloudAnimation
+                //handle fighting
             }
         }
     }
 
-    private void MovePlayerToTile(PlayerController player, Vector2Int oldPlayerTile, Vector2Int newPlayerTile)
-    {
-        if (TileOccupationDictionary.ContainsKey(oldPlayerTile) && TileOccupationDictionary[oldPlayerTile].Contains(player))
-        {
-            // Debug.Log($"removing {player.name} from {oldPlayerTile}");
-            TileOccupationDictionary[oldPlayerTile].Remove(player);
-        }
-
-        if (TileOccupationDictionary.ContainsKey(newPlayerTile) == false)
-        {
-            TileOccupationDictionary.Add(newPlayerTile, new List<PlayerController>());
-        }
-
-        Debug.Log($"moving {player.name} to {newPlayerTile}");
-
-        TileOccupationDictionary[newPlayerTile].Add(player);
-    }
 
     public Vector2Int WorldToMap(Vector2 worldPos)
     {

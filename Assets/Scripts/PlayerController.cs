@@ -20,7 +20,7 @@ public partial class PlayerController : MonoBehaviour
         soundManager = GameObject.FindWithTag("Sound")?.GetComponent<SoundManager>();
         beatManager = GameObject.Find("BeatManager").GetComponent<BeatManager>();
         mapManager = GameObject.Find("Map").GetComponent<MapManager>();
-        mapManager.OnPlayerMovementFinished(this.transform.position,this.transform.position,this);
+        mapManager.RegisterPlayer(this);
     }
 
     private void OnEnable()

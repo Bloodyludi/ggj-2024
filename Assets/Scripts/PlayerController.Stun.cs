@@ -11,15 +11,15 @@ public partial class PlayerController
     {
         if (Input.GetKeyDown(KeyCode.C))
         {
-            StunPlayer();
+            StunPlayer(moveDir*-1);
         }
     }
 
-    public void StunPlayer()
+    public void StunPlayer(Vector2 direction)
     {
         if (playerState.CurrentStateEnum == PlayerStateEnum.Stunned) return;
         recoverFromStunBeatNumber = beatManager.BeatCounter + beatStunDuration;
-        
+        moveDir = direction;
         beatManager.OnBeatUpdate += ResolvePlayerStun;
     }
 
@@ -29,14 +29,16 @@ public partial class PlayerController
         {
             beatManager.OnBeatUpdate -= ResolvePlayerStun;
             playerState.CurrentStateEnum = PlayerStateEnum.None;
+            moveDir = Vector2.zero;
             return;
         }
-        Debug.Log($"stunned for{recoverFromStunBeatNumber-beatManager.BeatCounter} ");
+
+        Debug.Log($"stunned {this.name} for {recoverFromStunBeatNumber - beatManager.BeatCounter} ");
         playerState.CurrentStateEnum = PlayerStateEnum.Stunned;
         soundManager.PlaySfx(SoundManager.Sfx.PlayerHit);
-        RestartRoutine(Pushback(moveDir *-1));
+        RestartRoutine(Pushback(moveDir * -1));
     }
-    
+
     private IEnumerator Pushback(Vector2 direction)
     {
         float movementDuration = beatManager.SecondsPerBeat * 0.2f;
@@ -51,6 +53,4 @@ public partial class PlayerController
         currentMoveRoutine = null;
         yield return null;
     }
-    
-    
 }
