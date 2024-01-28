@@ -17,7 +17,7 @@ public partial class PlayerController
 
     public void StunPlayer()
     {
-        if (playerState.CurrentAction == PlayerAction.Stunned) return;
+        if (playerState.CurrentStateEnum == PlayerStateEnum.Stunned) return;
         recoverFromStunBeatNumber = beatManager.BeatCounter + beatStunDuration;
         
         beatManager.OnBeatUpdate += ResolvePlayerStun;
@@ -28,11 +28,11 @@ public partial class PlayerController
         if (beatManager.BeatCounter > recoverFromStunBeatNumber)
         {
             beatManager.OnBeatUpdate -= ResolvePlayerStun;
-            playerState.CurrentAction = PlayerAction.None;
+            playerState.CurrentStateEnum = PlayerStateEnum.None;
             return;
         }
         Debug.Log($"stunned for{recoverFromStunBeatNumber-beatManager.BeatCounter} ");
-        playerState.CurrentAction = PlayerAction.Stunned;
+        playerState.CurrentStateEnum = PlayerStateEnum.Stunned;
         soundManager.PlaySfx(SoundManager.Sfx.PlayerHit);
         RestartRoutine(Pushback(moveDir *-1));
     }

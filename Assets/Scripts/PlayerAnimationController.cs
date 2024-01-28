@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class PlayerAnimationController : MonoBehaviour
@@ -12,15 +11,14 @@ public class PlayerAnimationController : MonoBehaviour
     private static readonly int Down = Animator.StringToHash("Down");
     private static readonly int Left = Animator.StringToHash("Left");
     private static readonly int Right = Animator.StringToHash("Right");
-    private static readonly int Dead = Animator.StringToHash("Dead");
 
-    private static readonly string[] Actions =
+    private static readonly string[] States =
     {
-        "NoneAction",
-        "PickingUpAction",
-        "CarryingAction",
-        "ThrowingAction",
-        "StunnedAction",
+        "None",
+        "MissedBeat",
+        "Brawl",
+        "Stunned",
+        "Dead",
     };
 
     private void Start()
@@ -37,16 +35,16 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void OnEnable()
     {
-        playerState.OnActionChanged += OnPlayerActionChanged;
+        playerState.OnStateChanged += OnPlayerStateChanged;
         playerState.OnOrientationChanged += OnPlayerOrientationChanged;
 
-        OnPlayerActionChanged(playerState.CurrentAction);
+        OnPlayerStateChanged(playerState.CurrentStateEnum);
         OnPlayerOrientationChanged(playerState.PlayerOrientation);
     }
 
     private void OnDisable()
     {
-        playerState.OnActionChanged -= OnPlayerActionChanged;
+        playerState.OnStateChanged -= OnPlayerStateChanged;
         playerState.OnOrientationChanged -= OnPlayerOrientationChanged;
     }
 
@@ -64,25 +62,30 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void UpdateWalking()
     {
-        animator.SetBool(Dead,playerState.CurrentAction == PlayerAction.Dead);
-        animator.SetBool(Idle, playerState.CurrentAction != PlayerAction.Dead && !playerState.IsWalking);
+        if (playerState.CurrentStateEnum != PlayerStateEnum.None)
+        {
+            return;
+        }
+
+        animator.SetBool(Idle, playerState.WalkDirection.magnitude <= 0f);
         animator.SetBool(Up, playerState.WalkDirection.y > 0);
         animator.SetBool(Down, playerState.WalkDirection.y < 0);
         animator.SetBool(Left, playerState.WalkDirection.x > 0);
         animator.SetBool(Right, playerState.WalkDirection.x < 0);
     }
 
-    private void OnPlayerActionChanged(PlayerAction action)
+    private void OnPlayerStateChanged(PlayerStateEnum stateEnum)
     {
-        if (action == PlayerAction.Dead)
+        var currentState = stateEnum.ToString();
+        foreach (var state in States)
         {
-            animator.SetBool(Dead,true);
+            animator.SetBool(state,currentState.Equals(state));
         }
         
-        var currentActionStr = $"{action.ToString()}Action";
-        foreach (var actionStr in Actions)
-        {
-            animator.SetBool(actionStr,currentActionStr.Equals(actionStr));
-        }
+        animator.SetBool(Idle, false);
+        animator.SetBool(Up, false);
+        animator.SetBool(Down, false);
+        animator.SetBool(Left, false);
+        animator.SetBool(Right, false);
     }
 }

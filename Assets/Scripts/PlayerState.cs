@@ -1,12 +1,11 @@
 using System;
 using UnityEngine;
 
-public enum PlayerAction
+public enum PlayerStateEnum
 {
     None,
-    PickingUp,
-    Carrying,
-    Throwing,
+    MissedBeat,
+    Brawl,
     Stunned,
     Dead,
 }
@@ -15,17 +14,17 @@ public class PlayerState : MonoBehaviour
 {
     public bool InputEnabled { get; set; } = true;
 
-    public event Action<PlayerAction> OnActionChanged;
+    public event Action<PlayerStateEnum> OnStateChanged;
 
-    private PlayerAction currentAction = PlayerAction.None;
+    private PlayerStateEnum currentState = PlayerStateEnum.None;
 
-    public PlayerAction CurrentAction
+    public PlayerStateEnum CurrentStateEnum
     {
-        get => currentAction;
+        get => currentState;
         set
         {
-            OnActionChanged?.Invoke(value);
-            currentAction = value;
+            OnStateChanged?.Invoke(value);
+            currentState = value;
         }
     }
     public event Action<int> OnOrientationChanged;
@@ -45,11 +44,8 @@ public class PlayerState : MonoBehaviour
         }
     }
 
-    public bool IsWalking => WalkDirection.magnitude > 0f;
     public Vector2 WalkDirection { get; set; }
-    public Transform ObjectCarrying { get; set; }
     
-    public bool CanWalk => InputEnabled && CurrentAction != PlayerAction.Stunned;
-    public bool CanPickUp => InputEnabled && CurrentAction != PlayerAction.Stunned && CurrentAction != PlayerAction.Carrying && CurrentAction != PlayerAction.Throwing;
+    public bool CanWalk => InputEnabled && CurrentStateEnum != PlayerStateEnum.Stunned && CurrentStateEnum != PlayerStateEnum.Dead;
     public bool IsPlayer2 { get; set; }
 }
