@@ -33,7 +33,7 @@ public partial class PlayerController
             else if (timeUntilNextBeat <= moveWindowSeconds)
             {
                 // Debug.Log($"Moving before beat: {timeUntilNextBeat}");
-                blockedTime = beatManager.NextBeatTime + moveWindowSeconds;
+                blockedTime = (float)(beatManager.NextBeatTime + moveWindowSeconds);
                 MoveOnBeat();
             }
         }
