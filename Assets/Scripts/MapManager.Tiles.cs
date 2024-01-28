@@ -3,7 +3,7 @@ using UnityEngine;
 
 public partial class MapManager : MonoBehaviour
 {
-    public void DeadlyTilePositions()
+    public void UpdateDeadlyTilePositions()
     {
         List<DancefloorTile> updated = new List<DancefloorTile>();
         foreach (var tile in tiles)
@@ -16,6 +16,7 @@ public partial class MapManager : MonoBehaviour
                 tile.SetDeadly(false);
                 var newTile = tiles[GetTileIndex(newDeadlyTilePos)];
                 newTile.SetDeadly(true);
+                newTile.movementDirection = tile.movementDirection;
                 updated.Add(newTile);
 
                 GetTileOccupancy().TryGetValue(new Vector2Int(newTile.position.y, newTile.position.x), out var players);

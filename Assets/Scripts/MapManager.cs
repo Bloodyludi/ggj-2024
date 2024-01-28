@@ -45,7 +45,10 @@ public partial class MapManager : MonoBehaviour
                 // Create a deadly tile for testing
                 var deadly = deadlyTiles.Any(v => v.x == x && v.y == y);
                 tile.SetDeadly(deadly);
-                tile.movementDirection = new Vector2Int(Random.Range(0,3), Random.Range(0,3));
+                if (deadly)
+                {
+                    tile.movementDirection = new Vector2Int(Random.Range(-1,2), Random.Range(-1,2));
+                }
 
                 tiles[GetTileIndex(tile.position)] = tile;
             }
@@ -65,8 +68,8 @@ public partial class MapManager : MonoBehaviour
         beatManager.OnBeat -= ResolveBoardCollisions;
         beatManager.OnBeat += ResolveBoardCollisions;
 
-        beatManager.OnBeat -= DeadlyTilePositions;
-        beatManager.OnBeat += DeadlyTilePositions;
+        beatManager.OnBeat -= UpdateDeadlyTilePositions;
+        beatManager.OnBeat += UpdateDeadlyTilePositions;
     }
 
     private void ResolveBoardCollisions()
