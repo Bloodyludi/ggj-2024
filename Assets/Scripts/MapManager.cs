@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public partial class MapManager : MonoBehaviour
 {
@@ -141,7 +140,10 @@ public partial class MapManager : MonoBehaviour
                 var hustleCloud = GameObject.Instantiate(HustleCloud);
                 spawnedHustles.Add(occupiedTiles.Key, hustleCloud);
                 hustleCloud.transform.position = MapToWorld(occupiedTiles.Key.x, occupiedTiles.Key.y);
-                Debug.Log($"Cloud at {occupiedTiles.Key}");
+                foreach (var playerController in occupiedTiles.Value)
+                {
+                    playerController.SetPlayerFighting();
+                }
             }
         }
     }
