@@ -23,7 +23,7 @@ public class PlayerManager : MonoBehaviour
         p2.transform.parent = mapManager.dancefloor;
         player2State = p2.GetComponent<PlayerState>();
         player2State.PlayerOrientation = -1;
-        p1Transform.position = mapManager.MapToWorld(4,4);
+        p2.transform.position = mapManager.MapToWorld(4,4);
         p2.transform.name = "Player 2";
         player2State.IsPlayer2 = true;
     }
