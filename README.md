@@ -11,6 +11,7 @@ LAB RATS is a 2-player game where players embody 2 lab rats trying to survive a 
 ## Downloads
 ## Downloads
 * [DOWNLOAD (MACOS)](https://github.com/Bloodyludi/ggj-2024/blob/main/docs/mac_builds/mac_build.zip)
+* [DOWNLOAD (WINDOWS)](https://github.com/Bloodyludi/ggj-2024/blob/main/docs/mac_builds/lab_rats_win.zip)
 
 ## Gameplay
 1. Both players start on the field
