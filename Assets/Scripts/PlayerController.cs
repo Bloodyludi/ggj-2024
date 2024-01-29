@@ -63,8 +63,6 @@ public partial class PlayerController : MonoBehaviour
 
     public void Kill()
     {
-        Debug.Log($"Player died: {transform.name} pos: {mapManager.WorldToMap(transform.position)}");
-        
         playerState.CurrentStateEnum = PlayerStateEnum.Dead;
         
         if (currentMoveRoutine != null)
