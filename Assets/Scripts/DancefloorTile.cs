@@ -52,7 +52,7 @@ public class DancefloorTile : MonoBehaviour
                                   Time.timeAsDouble
 #endif
 
-                ) / beatManager.SecondsPerBeat);
+                ) / beatManager.BeatInterval);
 
             if (isDeadly)
             {

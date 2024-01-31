@@ -37,11 +37,11 @@ public class SoundManager : MonoBehaviour
         DebugBeat2,
         DebugBeat3
     }
-    [SerializeField]private BeatManager beatManager;
-    [SerializeField] private AudioSource musicSource;
-    [SerializeField] private List<SyncedSounds> gameSounds;
-    private SyncedSounds currentGameSound;
 
+    public AudioSource MusicSource;
+
+    [SerializeField] private BeatManager beatManager;
+    [SerializeField] private List<SyncedSounds> gameSounds;
 
     [Header("SFX")] [SerializeField] private List<AudioClip> carrotHit;
     [SerializeField] private List<AudioClip> carrotBounceWater;
@@ -57,8 +57,8 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private List<AudioClip> debugBeat2;
     [SerializeField] private List<AudioClip> debugBeat3;
 
+    private SyncedSounds currentGameSound;
     private Dictionary<Sfx, List<AudioClip>> sfxMap = new();
-    
 
     public void Init(int musicIndex = 0)
     {
@@ -80,22 +80,22 @@ public class SoundManager : MonoBehaviour
         if (gameSounds.Count != 0)
         {
             currentGameSound = gameSounds[musicIndex];
-            musicSource.clip = currentGameSound.music;
-            musicSource.loop = true;
+            MusicSource.clip = currentGameSound.music;
+            MusicSource.loop = true;
             beatManager.SetBPM(currentGameSound.bpm);
         }
     }
 
     public void PlayMusic()
     {
-        musicSource.PlayDelayed(currentGameSound.delay);
+        MusicSource.PlayDelayed(currentGameSound.delay);
     }
 
 
     public void PlaySfx(Sfx sound, float volumeScale = 3.5f)
     {
         var sfx = GetSfxClip(sound);
-        musicSource.PlayOneShot(sfx, volumeScale);
+        MusicSource.PlayOneShot(sfx, volumeScale);
     }
 
     private AudioClip GetSfxClip(Sfx sound)

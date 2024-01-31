@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [Serializable]
 public struct TileSpawnConfig
@@ -20,10 +21,11 @@ public partial class MapManager : MonoBehaviour
         SpawnNewTiles();
     }
 
+
     private void MoveDeadlyTiles()
     {
         var updated = new List<DancefloorTile>();
-        
+
         foreach (var tile in tiles)
         {
             if (updated.Contains(tile) || !tile.isDeadly) continue;
@@ -56,7 +58,7 @@ public partial class MapManager : MonoBehaviour
             }
         }
     }
-    
+
     private void ResolvePlayerDeaths()
     {
         var deadlyTiles = tiles.Where(x => x.isDeadly).Select(t => new Vector2Int(t.position.y, t.position.x)).ToArray();
@@ -75,12 +77,12 @@ public partial class MapManager : MonoBehaviour
 
     private void SpawnNewTiles()
     {
-        var prev = beatManager.BeatCounter * beatManager.SecondsPerBeat;
-        var next = (beatManager.BeatCounter + 1) * beatManager.SecondsPerBeat;
+        var prev = beatManager.BeatCounter * beatManager.BeatInterval;
+        var next = (beatManager.BeatCounter + 1) * beatManager.BeatInterval;
         var tilesToSpawn = deadlyTileSpawns
             .Where(
-            v => prev <= v.spawnTimeSeconds && next > v.spawnTimeSeconds
-        );
+                v => prev <= v.spawnTimeSeconds && next > v.spawnTimeSeconds
+            );
 
         foreach (var sp in tilesToSpawn)
         {

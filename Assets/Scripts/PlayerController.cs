@@ -11,7 +11,7 @@ public partial class PlayerController : MonoBehaviour
     private Vector2 moveDir = Vector2.zero;
     
     private SoundManager soundManager;
-    private float blockedTime;
+    private float blockedUntil;
     
     private MapManager mapManager;
 

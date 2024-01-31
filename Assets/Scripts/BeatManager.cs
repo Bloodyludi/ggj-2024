@@ -19,7 +19,7 @@
 //     [NonSerialized] public float LastBeatTime;
 //     [NonSerialized] public float NextBeatTime;
 //
-//     public float SecondsPerBeat;
+//     public float BeatInterval;
 //     public int BeatCounter { get; private set; }
 //
 //     [Header("Debug")] public bool ResetBeatCoroutine = false;
@@ -28,7 +28,7 @@
 //
 //     private void OnGUI()
 //     {
-//         MoveWindowSeconds = MoveWindowTimePercent * SecondsPerBeat / 100f;
+//         MoveWindowSeconds = MoveWindowTimePercent * BeatInterval / 100f;
 //         if (ResetBeatCoroutine)
 //         {
 //             ResetBeatCoroutine = false;
@@ -50,9 +50,9 @@
 //
 //     private void InitBeatValues()
 //     {
-//         SecondsPerBeat = 60.0f / gameBPM;
-//         NextBeatTime = Time.time + SecondsPerBeat;
-//         MoveWindowSeconds = MoveWindowTimePercent * SecondsPerBeat / 100f;
+//         BeatInterval = 60.0f / gameBPM;
+//         NextBeatTime = Time.time + BeatInterval;
+//         MoveWindowSeconds = MoveWindowTimePercent * BeatInterval / 100f;
 //     }
 //
 //     public void DebugBeat()
@@ -70,14 +70,14 @@
 //             OnBeat?.Invoke();
 //
 //             LastBeatTime = Time.time;
-//             NextBeatTime = LastBeatTime + SecondsPerBeat;
+//             NextBeatTime = LastBeatTime + BeatInterval;
 //             BeatCounter++;
 //
 //             yield return new WaitForSeconds(MoveWindowSeconds);
 //
 //             OnPostBeat?.Invoke();
 //
-//             yield return new WaitForSeconds(SecondsPerBeat - MoveWindowSeconds * 2);
+//             yield return new WaitForSeconds(BeatInterval - MoveWindowSeconds * 2);
 //
 //             OnPreBeat?.Invoke();
 //
@@ -106,7 +106,7 @@
 //             soundManager.PlaySfx(SoundManager.Sfx.DebugBeat3);
 //
 //             LastBeatTime = currentTime;
-//             NextBeatTime = LastBeatTime + SecondsPerBeat;
+//             NextBeatTime = LastBeatTime + BeatInterval;
 //             BeatCounter++;
 //         }
 //
@@ -122,7 +122,7 @@
 //         var lapsedTimeSinceBeat = currentTime - LastBeatTime;
 //         var timeUntilNextBeat = NextBeatTime - currentTime;
 //         var timeToClosestBeat = Mathf.Min(lapsedTimeSinceBeat, timeUntilNextBeat);
-//         var moveWindowSeconds = MoveWindowTimePercent * SecondsPerBeat / 100;
+//         var moveWindowSeconds = MoveWindowTimePercent * BeatInterval / 100;
 //
 //         if (timeToClosestBeat <= moveWindowSeconds)
 //         {

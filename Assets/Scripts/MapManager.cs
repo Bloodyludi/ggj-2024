@@ -16,7 +16,7 @@ public partial class MapManager : MonoBehaviour
     [SerializeField] private TileSpawnConfig[] deadlyTileSpawns;
 
     public float TileSize => dancefloorTilePrefab.TileSize;
-    public Vector2 Dimensions => new Vector2(width,height);
+    public Vector2 Dimensions => new Vector2(width, height);
 
     [NonSerialized] public DancefloorTile[] tiles;
 
@@ -64,6 +64,7 @@ public partial class MapManager : MonoBehaviour
         beatManager.OnPostBeat += UpdateDeadlyTiles;
     }
 
+
     private void ResolveBoardCollisions()
     {
         var tileOccupationDictionary = GetTileOccupancy();
@@ -104,7 +105,7 @@ public partial class MapManager : MonoBehaviour
     private void HandleSameTileOccupancy(PlayerController playerController)
     {
         var currentBoardOccupancy = GetTileOccupancy();
-        TryAddClouds(currentBoardOccupancy,playerController);
+        TryAddClouds(currentBoardOccupancy, playerController);
         CleanOldClouds(currentBoardOccupancy);
     }
 
@@ -130,10 +131,10 @@ public partial class MapManager : MonoBehaviour
     {
         foreach (var occupiedTiles in currentBoardOccupancy)
         {
-            if (occupiedTiles.Value.Count > 1 && spawnedHustles.ContainsKey(occupiedTiles.Key) ==false)
+            if (occupiedTiles.Value.Count > 1 && spawnedHustles.ContainsKey(occupiedTiles.Key) == false)
             {
-                Debug.Log($"{controller.name} : triggered clouds" );
-                var hustleCloud = GameObject.Instantiate(HustleCloud,decorations.transform);
+                Debug.Log($"{controller.name} : triggered clouds");
+                var hustleCloud = GameObject.Instantiate(HustleCloud, decorations.transform);
                 spawnedHustles.Add(occupiedTiles.Key, hustleCloud);
                 hustleCloud.transform.position = MapToWorld(occupiedTiles.Key.x, occupiedTiles.Key.y) + TileSize * Vector2.one * 0.5f;
                 foreach (var playerController in occupiedTiles.Value)
