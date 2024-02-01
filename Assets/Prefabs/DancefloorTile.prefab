@@ -31,7 +31,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1187912064430790253
 SpriteRenderer:
@@ -103,4 +103,3 @@ MonoBehaviour:
   ren: {fileID: 1187912064430790253}
   isDeadly: 0
   position: {x: 0, y: 0}
-  movementDirection: {x: 1, y: 1}
