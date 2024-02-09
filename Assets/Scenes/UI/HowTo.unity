@@ -353,8 +353,8 @@ MonoBehaviour:
   m_HorizontalAlignment: 4
   m_VerticalAlignment: 256
   m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
+  m_characterSpacing: -8
+  m_wordSpacing: 20
   m_lineSpacing: 51.5
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
@@ -631,8 +631,8 @@ MonoBehaviour:
     can only move to the rhythm of the music
 
 
-    -Survive the dancfloor or have
-    a high combo to win'
+    -Survive the dancefloor or have
+    a higher combo than your friend to win'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 913844595ce81054d8b42761911ba18e, type: 2}
   m_sharedMaterial: {fileID: 7480152211162618466, guid: 913844595ce81054d8b42761911ba18e, type: 2}
@@ -669,8 +669,8 @@ MonoBehaviour:
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
+  m_characterSpacing: -8
+  m_wordSpacing: 20
   m_lineSpacing: 51.5
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
@@ -976,8 +976,8 @@ MonoBehaviour:
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
+  m_characterSpacing: -8
+  m_wordSpacing: 20
   m_lineSpacing: 51.5
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
