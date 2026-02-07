@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -59,16 +58,6 @@ public partial class PlayerController
         }
     }
 
-    private IEnumerator PacedForLoop(float duration, Action<float> onLapsedPercent)
-    {
-        for (float time = 0; time <= duration; time += Time.deltaTime)
-        {
-            float lapsedPercent = Mathf.Clamp01(time / duration);
-            onLapsedPercent.Invoke(lapsedPercent);
-            yield return new WaitForEndOfFrame();
-        }
-    }
-
     private IEnumerator Move(Vector2 direction, bool AnimatesSprites = false)
     {
         float movementDuration = beatManager.BeatInterval * 0.2f;
@@ -81,7 +70,7 @@ public partial class PlayerController
             HandleLocalAnimations(direction, movementDuration);
         }
 
-        yield return PacedForLoop(movementDuration, lapsedPercent =>
+        yield return CoroutineUtils.PacedForLoop(movementDuration, lapsedPercent =>
         {
             currentPosition = ogPos + moveDir * lapsedPercent * mapManager.TileSize;
             transform.position = mapManager.GetLoopPosition(currentPosition);
@@ -90,7 +79,7 @@ public partial class PlayerController
         position = ogPos + (Vector2)direction * mapManager.TileSize;
         position = mapManager.GetLoopPosition(position);
         transform.position = position;
-        mapManager.OnPLayerPositionUpdated(this);
+        mapManager.OnPlayerPositionUpdated(this);
 
         currentMoveRoutine = null;
         yield return null;

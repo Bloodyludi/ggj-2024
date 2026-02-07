@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public partial class MapManager : MonoBehaviour
@@ -13,7 +12,12 @@ public partial class MapManager : MonoBehaviour
     private Dictionary<Vector2Int, GameObject> spawnedHustles = new Dictionary<Vector2Int, GameObject>();
     [SerializeField] private int width = 5;
     [SerializeField] private int height = 8;
-    [SerializeField] private TileSpawnConfig[] deadlyTileSpawns;
+    private TileSpawnConfig[] deadlyTileSpawns;
+
+    public void SetDeadlyTileSpawns(TileSpawnConfig[] spawns)
+    {
+        deadlyTileSpawns = spawns;
+    }
 
     public float TileSize => dancefloorTilePrefab.TileSize;
     public Vector2 Dimensions => new Vector2(width, height);
@@ -31,9 +35,14 @@ public partial class MapManager : MonoBehaviour
             new Vector2(-1, 0),
         };
 
+    // Reusable caches to avoid per-beat GC allocations
+    private readonly Dictionary<Vector2Int, List<PlayerController>> occupancyCache = new();
+    private readonly List<Vector2> shuffledDirections = new(4);
+
     private void Awake()
     {
-        beatManager = GameObject.Find("SoundManager").GetComponent<BeatManager>();
+        Services.Register(this);
+        beatManager = Services.Get<BeatManager>();
         tiles = new DancefloorTile[width * height];
 
         for (var y = 0; y < height; y++)
@@ -41,6 +50,7 @@ public partial class MapManager : MonoBehaviour
             for (var x = 0; x < width; x++)
             {
                 var tile = Instantiate(dancefloorTilePrefab, dancefloor);
+                tile.Init(beatManager);
                 tile.SetPosition(x, y);
 
                 tiles[GetTileIndex(tile.position)] = tile;
@@ -51,17 +61,18 @@ public partial class MapManager : MonoBehaviour
             dancefloorTilePrefab.TileSize * (width - 1),
             dancefloorTilePrefab.TileSize * (height - 1)
         ) / 2;
-
-        AddListeners();
     }
 
-    private void AddListeners()
+    private void OnEnable()
     {
-        beatManager = FindObjectOfType<BeatManager>();
-        beatManager.OnPostBeat -= ResolveBoardCollisions;
         beatManager.OnPostBeat += ResolveBoardCollisions;
-        beatManager.OnPostBeat -= UpdateDeadlyTiles;
         beatManager.OnPostBeat += UpdateDeadlyTiles;
+    }
+
+    private void OnDisable()
+    {
+        beatManager.OnPostBeat -= ResolveBoardCollisions;
+        beatManager.OnPostBeat -= UpdateDeadlyTiles;
     }
 
 
@@ -75,16 +86,25 @@ public partial class MapManager : MonoBehaviour
                 continue;
             }
 
-            var directions = stunDirections.OrderBy(_ => Guid.NewGuid()).ToList();
+            // Fisher-Yates shuffle on reusable list
+            shuffledDirections.Clear();
+            shuffledDirections.AddRange(stunDirections);
+            for (int i = shuffledDirections.Count - 1; i > 0; i--)
+            {
+                int j = UnityEngine.Random.Range(0, i + 1);
+                (shuffledDirections[i], shuffledDirections[j]) = (shuffledDirections[j], shuffledDirections[i]);
+            }
+
+            int dirIndex = 0;
             foreach (var player in occupiedCell.Value)
             {
-                player.StunPlayer(directions[0]);
-                directions.RemoveAt(0);
+                player.StunPlayer(shuffledDirections[dirIndex]);
+                dirIndex++;
             }
         }
     }
 
-    public void OnPLayerPositionUpdated(PlayerController player)
+    public void OnPlayerPositionUpdated(PlayerController player)
     {
         ResolvePlayerDeaths();
         HandleSameTileOccupancy(player);
@@ -97,9 +117,24 @@ public partial class MapManager : MonoBehaviour
 
     private Dictionary<Vector2Int, List<PlayerController>> GetTileOccupancy()
     {
-        return playersInMap
-            .GroupBy(x => WorldToMap(x.transform.position), y => y)
-            .ToDictionary(x => x.Key, y => y.ToList());
+        // Clear and reuse cached dictionary
+        foreach (var kvp in occupancyCache)
+        {
+            kvp.Value.Clear();
+        }
+
+        foreach (var player in playersInMap)
+        {
+            var pos = WorldToMap(player.transform.position);
+            if (!occupancyCache.TryGetValue(pos, out var list))
+            {
+                list = new List<PlayerController>(2);
+                occupancyCache[pos] = list;
+            }
+            list.Add(player);
+        }
+
+        return occupancyCache;
     }
 
     private void HandleSameTileOccupancy(PlayerController playerController)
@@ -133,7 +168,6 @@ public partial class MapManager : MonoBehaviour
         {
             if (occupiedTiles.Value.Count > 1 && spawnedHustles.ContainsKey(occupiedTiles.Key) == false)
             {
-                Debug.Log($"{controller.name} : triggered clouds");
                 var hustleCloud = GameObject.Instantiate(HustleCloud, decorations.transform);
                 spawnedHustles.Add(occupiedTiles.Key, hustleCloud);
                 hustleCloud.transform.position = MapToWorld(occupiedTiles.Key.x, occupiedTiles.Key.y) + TileSize * Vector2.one * 0.5f;

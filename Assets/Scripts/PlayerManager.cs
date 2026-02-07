@@ -1,36 +1,66 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
-    [SerializeField] private MapManager mapManager;
     [SerializeField] private GameObject playerPrefab;
 
-    public PlayerState player1State;
-    public PlayerState player2State;
+    private MapManager mapManager;
+    private SoundManager soundManager;
+    private BeatManager beatManager;
+
+    public List<PlayerState> PlayerStates { get; } = new();
+
+    private struct PlayerSpawnConfig
+    {
+        public int playerIndex;
+        public string controlScheme;
+        public float spawnRow;
+        public float spawnColumn;
+        public int orientation;
+        public bool isPlayer2;
+    }
+
+    private static readonly PlayerSpawnConfig[] spawnConfigs =
+    {
+        new() { playerIndex = 1, controlScheme = "Keyboard Left", spawnRow = 3.6f, spawnColumn = 3.5f, orientation = 1, isPlayer2 = false },
+        new() { playerIndex = 2, controlScheme = "Keyboard Right", spawnRow = 3.6f, spawnColumn = 11.5f, orientation = -1, isPlayer2 = true },
+    };
+
+    private void Awake()
+    {
+        Services.Register(this);
+    }
 
     private void Start()
     {
-        var p1 = PlayerInput.Instantiate(playerPrefab, playerIndex: 1, controlScheme: "Keyboard Left", pairWithDevice: Keyboard.current);
-        var p1Transform = p1.transform;
-        p1Transform.name = "Player 1";
-        p1Transform.parent = mapManager.dancefloor;
-        p1Transform.position = mapManager.MapToWorld(3.6f, 3.5f);
-        player1State = p1.GetComponent<PlayerState>();
-        player1State.PlayerOrientation = 1;
+        mapManager = Services.Get<MapManager>();
+        soundManager = Services.Get<SoundManager>();
+        beatManager = Services.Get<BeatManager>();
 
-        var p2 = PlayerInput.Instantiate(playerPrefab, playerIndex: 2, controlScheme: "Keyboard Right", pairWithDevice: Keyboard.current);
-        p2.transform.parent = mapManager.dancefloor;
-        player2State = p2.GetComponent<PlayerState>();
-        player2State.PlayerOrientation = -1;
-        p2.transform.position = mapManager.MapToWorld(3.6f,11.5f);
-        p2.transform.name = "Player 2";
-        player2State.IsPlayer2 = true;
+        foreach (var config in spawnConfigs)
+        {
+            var playerInput = PlayerInput.Instantiate(playerPrefab, playerIndex: config.playerIndex, controlScheme: config.controlScheme, pairWithDevice: Keyboard.current);
+            var t = playerInput.transform;
+            t.name = $"Player {config.playerIndex}";
+            t.parent = mapManager.dancefloor;
+            t.position = mapManager.MapToWorld(config.spawnRow, config.spawnColumn);
+
+            var state = playerInput.GetComponent<PlayerState>();
+            state.PlayerOrientation = config.orientation;
+            state.IsPlayer2 = config.isPlayer2;
+            PlayerStates.Add(state);
+
+            playerInput.GetComponent<PlayerController>().Init(mapManager);
+        }
     }
 
     public void EnablePlayerInput(bool enable)
     {
-        player1State.InputEnabled = enable;
-        player2State.InputEnabled = enable;
+        foreach (var state in PlayerStates)
+        {
+            state.InputEnabled = enable;
+        }
     }
 }

@@ -33,6 +33,7 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene("HowTo");
     }
 
+    // Application.Quit() is intentionally a no-op in WebGL; kept for Editor use
     [UsedImplicitly]
     public void OnExitButtonClicked()
     {

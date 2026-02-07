@@ -15,24 +15,24 @@ public partial class PlayerController
         playerState.CurrentStateEnum = PlayerStateEnum.Stun;
         recoverFromStunBeatNumber = beatManager.BeatCounter + beatStunDuration;
         moveDir = direction;
-          
+
         beatManager.OnBeat -= ResolvePlayerStun;
         beatManager.OnBeat += ResolvePlayerStun;
     }
 
     public void SetPlayerFighting(Vector3 cloudPosition)
     {
-        Debug.Log($"Set player {this.name} fight");
+        Debug.Log($"[Stun] {this.name} entering brawl");
         playerState.CurrentStateEnum = PlayerStateEnum.Brawl;
         moveDir = Vector2.zero;
         this.transform.position = cloudPosition;
         soundManager.PlaySfx(SoundManager.Sfx.PlayerHit);
-        
+
         if (currentMoveRoutine != null)
         {
             StopCoroutine(currentMoveRoutine);
         }
-      
+
     }
 
     private void ResolvePlayerStun()
@@ -45,7 +45,7 @@ public partial class PlayerController
         {
             transform.localScale = Vector2.one;
 
-            Debug.Log($"Set player {this.name} badk to none");
+            Debug.Log($"[Stun] {this.name} recovering back to none");
 
             beatManager.OnBeat -= ResolvePlayerStun;
             playerState.CurrentStateEnum = PlayerStateEnum.None;
@@ -53,7 +53,7 @@ public partial class PlayerController
             return;
         }
 
-        Debug.Log($"Set player {this.name} stun");
+        Debug.Log($"[Stun] {this.name} still stunned");
 
         RestartRoutine(Move(moveDir));
     }

@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea4456c1bb8524a7397e5fcd0f002f08, type: 3}
+  m_Name: Ludwig
+  m_EditorClassIdentifier: Assembly-CSharp::SongLevelData
+  musicClip: {fileID: 8300000, guid: 759f8b8fbe42a40ccbf302162f78c245, type: 3}
+  bpm: 130
+  startDelay: 0
+  deadlyTileSpawns:
+  - spawnTimeSeconds: 3
+    spawnPosition: {x: 3, y: 2}
+    movementDirection: {x: 1, y: 0}
+  - spawnTimeSeconds: 6
+    spawnPosition: {x: 7, y: 3}
+    movementDirection: {x: 0, y: 1}
+  - spawnTimeSeconds: 9
+    spawnPosition: {x: 12, y: 6}
+    movementDirection: {x: 0, y: -1}
+  - spawnTimeSeconds: 14
+    spawnPosition: {x: 13, y: 3}
+    movementDirection: {x: 1, y: 0}
+  - spawnTimeSeconds: 16.4
+    spawnPosition: {x: 2, y: 4}
+    movementDirection: {x: 0, y: -1}
+  - spawnTimeSeconds: 20
+    spawnPosition: {x: 11, y: 1}
+    movementDirection: {x: 0, y: 1}
+  - spawnTimeSeconds: 25
+    spawnPosition: {x: 9, y: 0}
+    movementDirection: {x: -1, y: 0}
+  - spawnTimeSeconds: 30
+    spawnPosition: {x: 1, y: 6}
+    movementDirection: {x: -1, y: 0}
+  - spawnTimeSeconds: 35
+    spawnPosition: {x: 6, y: 4}
+    movementDirection: {x: 0, y: -1}
+  - spawnTimeSeconds: 40
+    spawnPosition: {x: 5, y: 4}
+    movementDirection: {x: -1, y: 0}
+  - spawnTimeSeconds: 45
+    spawnPosition: {x: 14, y: 6}
+    movementDirection: {x: 1, y: 0}

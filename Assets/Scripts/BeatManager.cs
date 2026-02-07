@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(AudioSource))]
 public class BeatManager : MonoBehaviour
@@ -10,12 +9,10 @@ public class BeatManager : MonoBehaviour
     public event Action OnBeat;
     public event Action OnPostBeat;
 
-    [SerializeField] private GameObject beatDebug; // Reference to the cube
-    [SerializeField] private SoundManager soundManager;
+    private SoundManager soundManager;
     [SerializeField, Range(0, 180)] private float bpm = 120.0f;
     [Range(1, 50)] public float MoveWindowTimePercent = 10;
     [SerializeField] public bool ShouldPerformTicks;
-    private int lastBeatNumber;
     public float BeatInterval => 60.0f / bpm;
     public float LastBeatTime { get; set; }
     public float NextBeatTime { get; set; }
@@ -24,8 +21,15 @@ public class BeatManager : MonoBehaviour
     public double MoveWindowSeconds => MoveWindowTimePercent * BeatInterval / 100;
     private GameController gameController;
 
+    private void Awake()
+    {
+        Services.Register(this);
+    }
+
     private void Start()
     {
+        soundManager = Services.Get<SoundManager>();
+        gameController = Services.Get<GameController>();
         InitMetronome();
     }
 
@@ -51,17 +55,10 @@ public class BeatManager : MonoBehaviour
         return soundManager.MusicSource.timeSamples / (soundManager.MusicSource.clip.frequency * BeatInterval);
     }
 
-    private void Awake()
-    {
-        this.gameController = FindObjectOfType<GameController>();
-        OnBeat -=  ScaleDebugElement;
-        OnBeat +=  ScaleDebugElement;
-    }
 
     private void Update()
     {
-        beatDebug.transform.localScale = Vector3.Lerp(beatDebug.transform.localScale, Vector3.one, Time.deltaTime*2f);
-        if (gameController.IsGameOver)
+        if (gameController == null || gameController.IsGameOver)
         {
             return;
         }
@@ -76,7 +73,6 @@ public class BeatManager : MonoBehaviour
         float currentBeat = GetCurrentBeatPosition();
         if (Mathf.FloorToInt(currentBeat) != BeatCounter)
         {
-            soundManager.PlaySfx(SoundManager.Sfx.DebugBeat3, 1);
             LastBeatTime = currentTime;
             NextBeatTime = LastBeatTime + BeatInterval;
             BeatCounter++;
@@ -91,16 +87,5 @@ public class BeatManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         action?.Invoke();
-    }
-
-
-    public void DebugBeatRange(Color c)
-    {
-        beatDebug.GetComponent<Renderer>().material.color = c;
-    }
-
-    public void ScaleDebugElement()
-    {
-        beatDebug.transform.localScale = Vector3.one * Random.Range(1.3f, 1.5f);
     }
 }

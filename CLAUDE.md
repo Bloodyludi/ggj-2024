@@ -10,7 +10,7 @@ This is a **living document**. When you make changes that affect the project's a
 - **Engine**: Unity (2D, URP not used - built-in render pipeline)
 - **Language**: C# (.NET Standard)
 - **Input**: Unity Input System package (1.17.0) - dual keyboard scheme (WASD + Arrow keys)
-- **Audio**: Unity AudioSource with `Time.timeAsDouble` beat synchronization (WebGL-safe)
+- **Audio**: Unity AudioSource with `Time.timeAsDouble` beat synchronization (WebGL-safe). Separate AudioSources for music and SFX.
 - **Build Target**: WebGL only (live at https://www.llauer.de/ggj-2024/)
 - **UI**: Unity UI (uGUI) + TextMeshPro
 - **Post-Processing**: Unity Post Processing Stack v2
@@ -18,7 +18,11 @@ This is a **living document**. When you make changes that affect the project's a
 ## Project Structure
 ```
 Assets/
-  Scripts/           # All 24 C# game scripts (flat structure)
+  Scripts/           # All C# game scripts (flat structure, plus Utils/ subfolder)
+    Utils/           # Vector2Extensions.cs
+    CoroutineUtils.cs      # Shared PacedForLoop utility (WebGL-safe, yield return null)
+    Services.cs            # Static service locator for manager cross-references
+    SongLevelData.cs       # ScriptableObject for song configuration
   Scenes/            # SampleScene (gameplay), MainMenu, HowTo, Credits, FireInTheHole
   Prefabs/           # Player, GameController, DancefloorTile, GameUI, SoundManager
   Animators/         # Player 1 & Player 2 animator controllers + animations
@@ -32,27 +36,33 @@ Assets/
 | System | Files | Role |
 |--------|-------|------|
 | Beat/Rhythm | `BeatManager.cs` | Central clock. Fires OnBeat/OnPreBeat/OnPostBeat events synced via `Time.timeAsDouble` |
-| Player | `PlayerController.cs`, `.Movement.cs`, `.Stun.cs` | Partial class. Handles input, beat-window movement, stun/brawl |
+| Player | `PlayerController.cs`, `.Movement.cs`, `.Stun.cs` | Partial class. Handles input, beat-window movement, stun/brawl. Injected via `Init()` method. |
 | Player State | `PlayerState.cs` | State machine: None, MissedBeat, Brawl, Stun, Dead |
-| Map | `MapManager.cs`, `MapManager.Tiles.cs` | 5x8 wrapping grid. Deadly tile spawning, movement, collision |
-| Tiles | `DancefloorTile.cs` | Individual tile: safe/deadly state, beat-synced pulsing |
-| Game Flow | `GameController.cs` | 180s timer, pause, speed-up at 60s, win condition evaluation |
-| Audio | `SoundManager.cs` | Music playback with BPM sync, SFX with random clip selection |
+| Map | `MapManager.cs`, `MapManager.Tiles.cs` | 5x8 wrapping grid. Deadly tile spawning, movement, collision. GC-optimized with reusable caches. |
+| Tiles | `DancefloorTile.cs` | Individual tile: safe/deadly state, beat-synced pulsing. Injected via `Init(BeatManager)`. |
+| Game Flow | `GameController.cs` | 180s timer, pause, win condition evaluation. Bridges SongLevelData to MapManager. |
+| Audio | `SoundManager.cs` | Music playback via SongLevelData, SFX on separate AudioSource with random clip selection |
+| Song Data | `SongLevelData.cs` | ScriptableObject: music clip, BPM, start delay, deadly tile spawn configs |
 | Animation | `PlayerAnimationController.cs`, `PlayerLocalAnimationController.cs` | Sprite animation + local movement (jump/bob) |
 | UI | `MainMenuController.cs`, `PauseScreen.cs`, `GameOverScreen.cs`, `ComboCounter.cs`, `CountdownTimer.cs` | Scene navigation, HUD |
-| Utility | `Vector2Extensions.cs`, `ShakeOnBeat.cs`, `AutoDestroy.cs`, `MatchWidth.cs` | Extensions, camera shake, cleanup, aspect ratio |
+| Service Locator | `Services.cs` | Static registry for manager cross-references. Managers self-register in `Awake()`, look up via `Services.Get<T>()` |
+| Utility | `CoroutineUtils.cs`, `Vector2Extensions.cs`, `ShakeOnBeat.cs`, `AutoDestroy.cs`, `MatchWidth.cs` | Shared coroutine helpers, extensions, camera shake, cleanup, aspect ratio |
 
 ## Key Design Patterns
-- **Event-driven**: BeatManager broadcasts beat events; systems subscribe rather than poll
+- **Service Locator**: `Services` static class for manager-to-manager references. Managers self-register in `Awake()` via `Services.Register(this)` and look up other managers via `Services.Get<T>()`. Falls back to `FindFirstObjectByType<T>()` if not yet registered. Clears on scene load.
+- **Event-driven**: BeatManager broadcasts beat events; systems subscribe via `OnEnable()`/`OnDisable()` rather than poll
 - **Partial classes**: PlayerController split into 3 files, MapManager split into 2
-- **Coroutine animations**: Movement and effects use `PacedForLoop()` with AnimationCurves
-- **Component-based**: MonoBehaviours with loose coupling via `FindObjectOfType`
+- **Coroutine animations**: Movement and effects use `CoroutineUtils.PacedForLoop()` with AnimationCurves
+- **Dependency injection**: `[SerializeField]` for asset references (prefabs, AudioClips, ScriptableObjects, UI elements, Transforms); `Services.Get<T>()` for manager cross-references; `Init()` methods for runtime-instantiated objects (PlayerController, DancefloorTile)
+- **ScriptableObject configuration**: Song data (clip, BPM, delay, tile spawns) stored in `SongLevelData` assets
+- **GC-optimized per-beat callbacks**: Reusable caches (dictionaries, hash sets, lists) instead of LINQ allocations
+- **Data-driven player spawning**: PlayerManager uses a static spawn config array for player instantiation
 
 ## Game Mechanics Quick Reference
 - **Beat window**: 10% of beat interval on each side (configurable via MoveWindowTimePercent)
 - **Combo**: +1 per beat-synced move, resets to 0 on miss
 - **Board wrapping**: Players wrap around all edges seamlessly
-- **Player collision**: Both players stunned for 1 beat, flung in random directions
+- **Player collision**: Both players stunned for 1 beat, flung in random directions (Fisher-Yates shuffle)
 - **Deadly tiles**: Move each beat in configured direction, instant kill on contact
 
 ## Hard Constraints
@@ -60,7 +70,7 @@ Assets/
 - NEVER edit files in `Library/`, `Temp/`, `obj/`, or `Logs/` - auto-generated
 - NEVER edit `ProjectSettings/` files directly - use Unity Editor
 - Changing `[SerializeField]` fields can break prefab/scene references - flag these changes
-- All scripts live in `Assets/Scripts/` (flat, no subfolders)
+- All scripts live in `Assets/Scripts/` (flat, plus `Utils/` subfolder)
 - Two control schemes: "Keyboard Left" (P1: WASD) and "Keyboard Right" (P2: arrows)
 
 ## WebGL Constraints (this is a WebGL-only project)
@@ -69,11 +79,12 @@ Assets/
 - NEVER use `System.IO` file operations (File.Read/Write) - there is no filesystem access in WebGL
 - NEVER use `System.Net.Sockets` or raw networking - use `UnityWebRequest` if HTTP is needed
 - NEVER use `Application.Quit()` for actual exit - it has no effect in WebGL (OK in menu UI as a no-op)
+- NEVER use `WaitForEndOfFrame` in coroutines - it can cause issues in WebGL. Use `yield return null` instead.
 - Avoid large blocking operations - WebGL runs on the browser main thread and will freeze the tab
 - Compressed audio formats: use `.mp3` or `.ogg` (not `.wav`) to minimize download size
 - Minimize asset sizes - everything is downloaded before play
 - `PlayerPrefs` works in WebGL (uses browser IndexedDB) - safe for save data if needed
-- All existing `#if !UNITY_WEBGL` / `#else` blocks should favor the WebGL path; clean up non-WebGL paths when possible
+- No `#if !UNITY_WEBGL` preprocessor blocks remain - WebGL is the only build target
 
 ## Code Style
 - PascalCase: classes, methods, properties, public fields

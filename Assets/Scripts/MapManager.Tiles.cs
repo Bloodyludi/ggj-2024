@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 [Serializable]
 public struct TileSpawnConfig
@@ -14,6 +12,10 @@ public struct TileSpawnConfig
 
 public partial class MapManager : MonoBehaviour
 {
+    // Reusable caches for tile operations
+    private readonly HashSet<DancefloorTile> updatedTilesCache = new();
+    private readonly HashSet<Vector2Int> deadlyPositionsCache = new();
+
     public void UpdateDeadlyTiles()
     {
         MoveDeadlyTiles();
@@ -24,11 +26,11 @@ public partial class MapManager : MonoBehaviour
 
     private void MoveDeadlyTiles()
     {
-        var updated = new List<DancefloorTile>();
+        updatedTilesCache.Clear();
 
         foreach (var tile in tiles)
         {
-            if (updated.Contains(tile) || !tile.isDeadly) continue;
+            if (updatedTilesCache.Contains(tile) || !tile.isDeadly) continue;
 
             var newDeadlyTilePos = FindFreePosition(tile.position + tile.movementDirection, tile.movementDirection);
             if (tile.position != newDeadlyTilePos)
@@ -37,7 +39,7 @@ public partial class MapManager : MonoBehaviour
                 var newTile = tiles[GetTileIndex(newDeadlyTilePos)];
                 newTile.SetDeadly(true);
                 newTile.movementDirection = tile.movementDirection;
-                updated.Add(newTile);
+                updatedTilesCache.Add(newTile);
             }
         }
     }
@@ -61,16 +63,25 @@ public partial class MapManager : MonoBehaviour
 
     private void ResolvePlayerDeaths()
     {
-        var deadlyTiles = tiles.Where(x => x.isDeadly).Select(t => new Vector2Int(t.position.y, t.position.x)).ToArray();
+        // Build deadly positions set without LINQ
+        deadlyPositionsCache.Clear();
+        foreach (var tile in tiles)
+        {
+            if (tile.isDeadly)
+            {
+                deadlyPositionsCache.Add(new Vector2Int(tile.position.y, tile.position.x));
+            }
+        }
 
-        for (var i = 0; i < playersInMap.Count; i++)
+        // Iterate backwards to safely remove while iterating
+        for (var i = playersInMap.Count - 1; i >= 0; i--)
         {
             var player = playersInMap[i];
             var playerPos = WorldToMap(player.transform.position);
-            if (deadlyTiles.Contains(playerPos))
+            if (deadlyPositionsCache.Contains(playerPos))
             {
                 player.Kill();
-                playersInMap.Remove(player);
+                playersInMap.RemoveAt(i);
             }
         }
     }
@@ -79,17 +90,17 @@ public partial class MapManager : MonoBehaviour
     {
         var prev = beatManager.BeatCounter * beatManager.BeatInterval;
         var next = (beatManager.BeatCounter + 1) * beatManager.BeatInterval;
-        var tilesToSpawn = deadlyTileSpawns
-            .Where(
-                v => prev <= v.spawnTimeSeconds && next > v.spawnTimeSeconds
-            );
 
-        foreach (var sp in tilesToSpawn)
+        for (int i = 0; i < deadlyTileSpawns.Length; i++)
         {
-            var targetPos = FindFreePosition(sp.spawnPosition, sp.movementDirection);
-            var tile = tiles[GetTileIndex(targetPos)];
-            tile.SetDeadly(true);
-            tile.movementDirection = sp.movementDirection;
+            var spawn = deadlyTileSpawns[i];
+            if (prev <= spawn.spawnTimeSeconds && next > spawn.spawnTimeSeconds)
+            {
+                var targetPos = FindFreePosition(spawn.spawnPosition, spawn.movementDirection);
+                var tile = tiles[GetTileIndex(targetPos)];
+                tile.SetDeadly(true);
+                tile.movementDirection = spawn.movementDirection;
+            }
         }
     }
 

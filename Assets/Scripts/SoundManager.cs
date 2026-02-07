@@ -1,23 +1,7 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
-
-[Serializable]
-public class SyncedSounds
-{
-    public AudioClip music;
-    public float delay;
-    public int bpm;
-}
-
-public enum SongDifficulty
-{
-    easyPeasy = 0,
-    ratDance = 1,
-    pesticide = 2,
-    ratZap = 3
-}
 
 [RequireComponent(typeof(AudioSource))]
 public class SoundManager : MonoBehaviour
@@ -25,77 +9,91 @@ public class SoundManager : MonoBehaviour
     public enum Sfx
     {
         PlayerHit,
-        CarrotBounceWater,
-        CarrotBounceCarrot,
-        CarrotBouncePlayer,
+        BounceWater,
+        BounceRat,
+        BouncePlayer,
         Pulling,
         Pulled,
         Landing,
         Charging,
-        Throw,
-        DebugBeat1,
-        DebugBeat2,
-        DebugBeat3
+        Throw
     }
 
     public AudioSource MusicSource;
+    [SerializeField] private AudioSource sfxSource;
 
-    [SerializeField] private BeatManager beatManager;
-    [SerializeField] private List<SyncedSounds> gameSounds;
+    private BeatManager beatManager;
+    [SerializeField] private SongLevelData currentSong;
 
-    [Header("SFX")] [SerializeField] private List<AudioClip> carrotHit;
-    [SerializeField] private List<AudioClip> carrotBounceWater;
-    [SerializeField] private List<AudioClip> carrotBounceCarrot;
-    [SerializeField] private List<AudioClip> carrotBouncePlayer;
-    [SerializeField] private List<AudioClip> carrotPulling;
-    [SerializeField] private List<AudioClip> carrotPulled;
-    [SerializeField] private List<AudioClip> carrotLanding;
-    [SerializeField] private List<AudioClip> carrotThrow;
-    [SerializeField] private List<AudioClip> carrotCharging;
+    [Header("SFX")]
+    [FormerlySerializedAs("carrotHit")]
+    [SerializeField] private List<AudioClip> hitSounds;
 
-    [SerializeField] private List<AudioClip> debugBeat1;
-    [SerializeField] private List<AudioClip> debugBeat2;
-    [SerializeField] private List<AudioClip> debugBeat3;
+    [FormerlySerializedAs("carrotBounceWater")]
+    [SerializeField] private List<AudioClip> bounceWaterSounds;
 
-    private SyncedSounds currentGameSound;
+    [FormerlySerializedAs("carrotBounceCarrot")]
+    [SerializeField] private List<AudioClip> bounceRatSounds;
+
+    [FormerlySerializedAs("carrotBouncePlayer")]
+    [SerializeField] private List<AudioClip> bouncePlayerSounds;
+
+    [FormerlySerializedAs("carrotPulling")]
+    [SerializeField] private List<AudioClip> pullingSounds;
+
+    [FormerlySerializedAs("carrotPulled")]
+    [SerializeField] private List<AudioClip> pulledSounds;
+
+    [FormerlySerializedAs("carrotLanding")]
+    [SerializeField] private List<AudioClip> landingSounds;
+
+    [FormerlySerializedAs("carrotThrow")]
+    [SerializeField] private List<AudioClip> throwSounds;
+
+    [FormerlySerializedAs("carrotCharging")]
+    [SerializeField] private List<AudioClip> chargingSounds;
+
     private Dictionary<Sfx, List<AudioClip>> sfxMap = new();
 
-    public void Init(int musicIndex = 0)
+    public SongLevelData CurrentSong => currentSong;
+
+    private void Awake()
     {
+        Services.Register(this);
+    }
+
+    public void Init()
+    {
+        beatManager = Services.Get<BeatManager>();
         sfxMap.Clear();
-        sfxMap.Add(Sfx.PlayerHit, carrotHit);
-        sfxMap.Add(Sfx.CarrotBounceWater, carrotBounceWater);
-        sfxMap.Add(Sfx.CarrotBounceCarrot, carrotBounceCarrot);
-        sfxMap.Add(Sfx.CarrotBouncePlayer, carrotBouncePlayer);
-        sfxMap.Add(Sfx.Pulling, carrotPulling);
-        sfxMap.Add(Sfx.Pulled, carrotPulled);
-        sfxMap.Add(Sfx.Landing, carrotLanding);
-        sfxMap.Add(Sfx.Throw, carrotThrow);
-        sfxMap.Add(Sfx.Charging, carrotCharging);
-        sfxMap.Add(Sfx.DebugBeat1, debugBeat1);
-        sfxMap.Add(Sfx.DebugBeat2, debugBeat2);
-        sfxMap.Add(Sfx.DebugBeat3, debugBeat3);
+        sfxMap.Add(Sfx.PlayerHit, hitSounds);
+        sfxMap.Add(Sfx.BounceWater, bounceWaterSounds);
+        sfxMap.Add(Sfx.BounceRat, bounceRatSounds);
+        sfxMap.Add(Sfx.BouncePlayer, bouncePlayerSounds);
+        sfxMap.Add(Sfx.Pulling, pullingSounds);
+        sfxMap.Add(Sfx.Pulled, pulledSounds);
+        sfxMap.Add(Sfx.Landing, landingSounds);
+        sfxMap.Add(Sfx.Throw, throwSounds);
+        sfxMap.Add(Sfx.Charging, chargingSounds);
 
-
-        if (gameSounds.Count != 0)
+        if (currentSong != null)
         {
-            currentGameSound = gameSounds[musicIndex];
-            MusicSource.clip = currentGameSound.music;
+            MusicSource.clip = currentSong.musicClip;
             MusicSource.loop = true;
-            beatManager.SetBPM(currentGameSound.bpm);
+            beatManager.SetBPM(currentSong.bpm);
         }
     }
 
     public void PlayMusic()
     {
-        MusicSource.PlayDelayed(currentGameSound.delay);
+        MusicSource.PlayDelayed(currentSong.startDelay);
     }
 
 
     public void PlaySfx(Sfx sound, float volumeScale = 3.5f)
     {
         var sfx = GetSfxClip(sound);
-        MusicSource.PlayOneShot(sfx, volumeScale);
+        sfxSource.PlayOneShot(sfx, volumeScale);
     }
 
     private AudioClip GetSfxClip(Sfx sound)

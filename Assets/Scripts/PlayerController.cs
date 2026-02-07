@@ -9,31 +9,36 @@ public partial class PlayerController : MonoBehaviour
     [SerializeField] private PlayerLocalAnimationController playerLocalAnimationController;
     private BeatManager beatManager;
     private Vector2 moveDir = Vector2.zero;
-    
+
     private SoundManager soundManager;
     private float blockedUntil;
-    
+
     private MapManager mapManager;
 
-    private void Awake()
+    public void Init(MapManager mapManager)
     {
-        soundManager = GameObject.FindWithTag("Sound")?.GetComponent<SoundManager>();
-        beatManager = GameObject.FindObjectOfType<BeatManager>();
-        mapManager = GameObject.Find("Map").GetComponent<MapManager>();
+        this.soundManager = Services.Get<SoundManager>();
+        this.beatManager = Services.Get<BeatManager>();
+        this.mapManager = mapManager;
         mapManager.RegisterPlayer(this);
-
-        beatManager.OnPostBeat -= CheckPlayerMoved;
-        beatManager.OnPostBeat += CheckPlayerMoved;
     }
 
     private void OnEnable()
     {
         playerInput.onActionTriggered += EventHandler;
+        if (beatManager != null)
+        {
+            beatManager.OnPostBeat += CheckPlayerMoved;
+        }
     }
 
     private void OnDisable()
     {
         playerInput.onActionTriggered -= EventHandler;
+        if (beatManager != null)
+        {
+            beatManager.OnPostBeat -= CheckPlayerMoved;
+        }
     }
 
     private void EventHandler(InputAction.CallbackContext context)
@@ -64,7 +69,7 @@ public partial class PlayerController : MonoBehaviour
     public void Kill()
     {
         playerState.CurrentStateEnum = PlayerStateEnum.Dead;
-        
+
         if (currentMoveRoutine != null)
         {
             StopCoroutine(currentMoveRoutine);
