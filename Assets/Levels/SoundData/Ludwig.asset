@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SongLevelData
   displayName: Ludwig
   musicClip: {fileID: 8300000, guid: 759f8b8fbe42a40ccbf302162f78c245, type: 3}
-  bpm: 130
+  bpm: 136
   startDelay: 0
-  moveWindowTimePercent: -1
+  moveWindowTimePercent: 20
   deadlyTileSpawns:
   - spawnTimeSeconds: 3
     spawnPosition: {x: 3, y: 2}
@@ -51,3 +51,5 @@ MonoBehaviour:
   - spawnTimeSeconds: 45
     spawnPosition: {x: 14, y: 6}
     movementDirection: {x: 1, y: 0}
+  pickupSpawnInterval: 5
+  pickupComboReward: 5

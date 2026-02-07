@@ -16,7 +16,7 @@ MonoBehaviour:
   musicClip: {fileID: 8300000, guid: 63bc73abb09984b4a8aa297793c4a25d, type: 3}
   bpm: 120
   startDelay: 0
-  moveWindowTimePercent: -1
+  moveWindowTimePercent: 25
   deadlyTileSpawns:
   - spawnTimeSeconds: 2
     spawnPosition: {x: 1, y: 1}
@@ -57,3 +57,5 @@ MonoBehaviour:
   - spawnTimeSeconds: 36
     spawnPosition: {x: 3, y: 4}
     movementDirection: {x: -1, y: 0}
+  pickupSpawnInterval: 5
+  pickupComboReward: 5

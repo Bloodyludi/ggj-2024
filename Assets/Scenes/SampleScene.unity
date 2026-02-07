@@ -1026,7 +1026,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.7544665
+  orthographic size: 6.6711245
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -11814,7 +11814,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4655915615986428297, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
   m_PrefabInstance: {fileID: 4655915617118249446}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 4655915617118249447}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 254cf644049d64925a48415e28f74499, type: 3}
@@ -11825,7 +11825,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2139582239, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
   m_PrefabInstance: {fileID: 4655915617118249446}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 4655915617118249447}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55c12d023f52d407d94841cdeac341e1, type: 3}
@@ -17047,8 +17047,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4655915615986428296, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4655915617118249448}
   m_SourcePrefab: {fileID: 100100000, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
+--- !u!1 &4655915617118249447 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4655915615986428296, guid: 4a76c63f1f7954d30b7bd8bfef6d22ae, type: 3}
+  m_PrefabInstance: {fileID: 4655915617118249446}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4655915617118249448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4655915617118249447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2515c25ae8ad14ca8852f792cd000d72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BeatDebugOverlay
+  graphShader: {fileID: 4800000, guid: 6ee269cdd43e34b798bea11123d1b167, type: 3}
+  toggleKey: 16
+  beatsToShow: 6
+  visibleOnStart: 0
 --- !u!1 &9151555084888625831
 GameObject:
   m_ObjectHideFlags: 0
