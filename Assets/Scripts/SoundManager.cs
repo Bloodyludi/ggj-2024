@@ -76,11 +76,17 @@ public class SoundManager : MonoBehaviour
         sfxMap.Add(Sfx.Throw, throwSounds);
         sfxMap.Add(Sfx.Charging, chargingSounds);
 
+        if (SongLibrary.SelectedSong != null)
+            currentSong = SongLibrary.SelectedSong;
+
         if (currentSong != null)
         {
             MusicSource.clip = currentSong.musicClip;
             MusicSource.loop = true;
             beatManager.SetBPM(currentSong.bpm);
+
+            if (currentSong.moveWindowTimePercent > 0)
+                beatManager.SetMoveWindowTimePercent(currentSong.moveWindowTimePercent);
         }
     }
 

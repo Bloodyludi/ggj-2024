@@ -26,11 +26,23 @@ PlayerManager (bootstrap)
 
 SoundManager (audio)
   ├── Awake() ─────> Services.Register(this)
-  ├── Init() ──────> Services.Get<BeatManager>(), sets up SFX map and song
+  ├── Init() ──────> Services.Get<BeatManager>(), checks SongLibrary.SelectedSong, sets up SFX map and song
+  ├── Init() ──────> Applies per-song beat window via BeatManager.SetMoveWindowTimePercent() if configured
   ├── MusicSource ──> AudioSource (drives BeatManager timing)
   ├── sfxSource ───> AudioSource (separate channel for SFX)
-  ├── CurrentSong ─> SongLevelData ScriptableObject
+  ├── CurrentSong ─> SongLevelData ScriptableObject (runtime-selected or Inspector fallback)
   └── PlaySfx() ───> One-shot sound effects with random clip selection
+
+SongLibrary (song selection, cross-scene)
+  ├── songs[] ─────> Array of SongLevelData assets (wired in Inspector)
+  └── static SelectedSong ──> Set by SongSelector in MainMenu, read by SoundManager.Init()
+
+SongSelector (MainMenu UI)
+  ├── songLibrary ──> [SerializeField] SongLibrary asset
+  ├── songNameText ─> [SerializeField] TMP_Text display ("Song: <name>")
+  ├── OnSongChanged ─> event Action<SongLevelData> (fires on every selection change incl. Start)
+  ├── NextSong() ──> Cycles forward (wrap-around), sets SongLibrary.SelectedSong
+  └── PreviousSong() > Cycles backward (wrap-around), sets SongLibrary.SelectedSong
 ```
 
 ## Reference Resolution Pattern
@@ -71,12 +83,22 @@ The heartbeat of the game. Everything gameplay-related is driven by beat events.
 ## Song Data (SongLevelData.cs - ScriptableObject)
 
 Centralizes per-song configuration that was previously scattered:
+- `displayName` - shown in song selector UI (falls back to asset name if empty via `DisplayName` property)
 - `musicClip` - the AudioClip to play
 - `bpm` - beats per minute (default 120)
 - `startDelay` - delay before music starts
+- `moveWindowTimePercent` - per-song beat window override (%). `-1` = use BeatManager default (10%)
 - `deadlyTileSpawns` - array of TileSpawnConfig (timing, position, direction)
 
 Created via Assets > Create > Lab Rats > Song Level Data. Referenced by SoundManager.
+
+## Song Selection (SongLibrary.cs + SongSelector.cs)
+
+Cross-scene song selection system:
+- **SongLibrary** (ScriptableObject): Holds array of `SongLevelData` assets. Created via Assets > Create > Lab Rats > Song Library.
+- **SongLibrary.SelectedSong** (static property): Set by SongSelector in MainMenu, read by SoundManager.Init(). Null if MainMenu was skipped (e.g., launching SampleScene directly from Editor).
+- **SongSelector** (MonoBehaviour): MainMenu UI component with `NextSong()`/`PreviousSong()` methods (wired to buttons via Inspector). Displays `"Song: <name>"` via TMP_Text. Fires `OnSongChanged` event (`Action<SongLevelData>`) on every selection change (including initial `Start()`).
+- **Fallback**: If `SongLibrary.SelectedSong` is null, SoundManager uses its Inspector-wired `currentSong` field (backward-compatible).
 
 ## Player System (Partial Class: 3 files)
 
@@ -156,11 +178,12 @@ Static class providing `PacedForLoop(float duration, Action<float>)`:
 ## UI Flow
 
 ```
-MainMenu (MainMenuController)
-  ├── Start Game ──> SampleScene
-  ├── How To ──────> HowTo scene (HowToController)
-  ├── Credits ─────> Credits scene (CreditsController)
-  └── Exit ────────> Application.Quit() (no-op in WebGL)
+MainMenu (MainMenuController + SongSelector)
+  ├── Song Selector ─> SongSelector cycles SongLibrary, sets SongLibrary.SelectedSong
+  ├── Start Game ────> SampleScene (SoundManager reads SelectedSong in Init())
+  ├── How To ────────> HowTo scene (HowToController)
+  ├── Credits ───────> Credits scene (CreditsController)
+  └── Exit ──────────> Application.Quit() (no-op in WebGL)
 
 SampleScene (gameplay)
   ├── PauseScreen ──> Resume / Quit to MainMenu

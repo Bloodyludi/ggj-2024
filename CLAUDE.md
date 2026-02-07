@@ -23,8 +23,10 @@ Assets/
     CoroutineUtils.cs      # Shared PacedForLoop utility (WebGL-safe, yield return null)
     Services.cs            # Static service locator for manager cross-references
     SongLevelData.cs       # ScriptableObject for song configuration
+    SongLibrary.cs         # ScriptableObject listing all available songs + static SelectedSong
+    SongSelector.cs        # MainMenu UI component for cycling through songs
   SoundFX/
-    SoundData/           # SongLevelData assets (e.g., Ludwig.asset)
+    SoundData/           # SongLevelData assets (Ludwig.asset, Ludwig 1.asset, Ludwig 2.asset)
   Scenes/            # SampleScene (gameplay), MainMenu, HowTo, Credits, FireInTheHole
   Prefabs/           # Player, GameController, DancefloorTile, GameUI, SoundManager
   Animators/         # Player 1 & Player 2 animator controllers + animations
@@ -44,7 +46,8 @@ Assets/
 | Tiles | `DancefloorTile.cs` | Individual tile: safe/deadly state, beat-synced pulsing. Injected via `Init(BeatManager)`. |
 | Game Flow | `GameController.cs` | 180s timer, pause, win condition evaluation. Bridges SongLevelData to MapManager. Dramatic 1.5s death pause when all players die. |
 | Audio | `SoundManager.cs` | Music playback via SongLevelData, SFX on separate AudioSource with random clip selection |
-| Song Data | `SongLevelData.cs` | ScriptableObject: music clip, BPM, start delay, deadly tile spawn configs |
+| Song Data | `SongLevelData.cs` | ScriptableObject: music clip, BPM, start delay, beat window override, deadly tile spawn configs |
+| Song Selection | `SongLibrary.cs`, `SongSelector.cs` | ScriptableObject song list + MainMenu song picker UI. `OnSongChanged` event, static `SongLibrary.SelectedSong` passes selection across scenes. |
 | Animation | `PlayerAnimationController.cs`, `PlayerLocalAnimationController.cs` | Sprite animation + local movement (jump/bob) |
 | UI | `MainMenuController.cs`, `PauseScreen.cs`, `GameOverScreen.cs`, `ComboCounter.cs`, `CountdownTimer.cs` | Scene navigation, HUD |
 | Service Locator | `Services.cs` | Static registry for manager cross-references. Managers self-register in `Awake()`, look up via `Services.Get<T>()` |
@@ -59,9 +62,10 @@ Assets/
 - **ScriptableObject configuration**: Song data (clip, BPM, delay, tile spawns) stored in `SongLevelData` assets
 - **GC-optimized per-beat callbacks**: Reusable caches (dictionaries, hash sets, lists) instead of LINQ allocations
 - **Data-driven player spawning**: PlayerManager uses a static spawn config array for player instantiation
+- **Cross-scene song selection**: `SongLibrary.SelectedSong` static property passes the player's song choice from MainMenu to SampleScene. SoundManager reads it in `Init()`, falling back to the Inspector-wired default if null.
 
 ## Game Mechanics Quick Reference
-- **Beat window**: 10% of beat interval on each side (configurable via MoveWindowTimePercent)
+- **Beat window**: 10% of beat interval on each side (configurable via MoveWindowTimePercent, overridable per-song via SongLevelData.moveWindowTimePercent)
 - **Combo**: +1 per beat-synced move, resets to 0 on off-beat press (miss)
 - **Board wrapping**: Players wrap around all edges seamlessly
 - **Player collision**: Both players stunned for 1 beat, flung in random directions (Fisher-Yates shuffle)

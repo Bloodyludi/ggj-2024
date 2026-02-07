@@ -44,6 +44,11 @@ public class BeatManager : MonoBehaviour
         this.bpm = bpm;
     }
 
+    public void SetMoveWindowTimePercent(float percent)
+    {
+        MoveWindowTimePercent = percent;
+    }
+
     private void InitMetronome()
     {
         LastBeatTime = 0;

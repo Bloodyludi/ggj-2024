@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea4456c1bb8524a7397e5fcd0f002f08, type: 3}
   m_Name: Ludwig
   m_EditorClassIdentifier: Assembly-CSharp::SongLevelData
+  displayName: Ludwig
   musicClip: {fileID: 8300000, guid: 759f8b8fbe42a40ccbf302162f78c245, type: 3}
   bpm: 130
   startDelay: 0
+  moveWindowTimePercent: -1
   deadlyTileSpawns:
   - spawnTimeSeconds: 3
     spawnPosition: {x: 3, y: 2}
