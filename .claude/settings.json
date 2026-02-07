@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Edit(Assets/**/*.meta)",
+      "Write(Assets/**/*.meta)",
+      "Edit(Library/**)",
+      "Write(Library/**)",
+      "Edit(Temp/**)",
+      "Write(Temp/**)",
+      "Edit(obj/**)",
+      "Write(obj/**)",
+      "Edit(Logs/**)",
+      "Write(Logs/**)",
+      "Edit(ProjectSettings/**)",
+      "Write(ProjectSettings/**)"
+    ]
+  }
+}
