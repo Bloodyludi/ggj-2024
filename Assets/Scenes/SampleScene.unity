@@ -1026,7 +1026,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6.6711245
+  orthographic size: 7.7544665
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1218,6 +1218,9 @@ MonoBehaviour:
   dancefloorTilePrefab: {fileID: 1187912064430790250, guid: 93d905a34ee374258ac658413d1be319, type: 3}
   width: 15
   height: 7
+  deadlyTileSpawns: []
+  pickupPrefab: {fileID: 1317155613606727736, guid: 47e5298b9441c7243bd011b409569ff0, type: 3}
+  pickupSpawnInterval: 5
 --- !u!1 &733166577
 GameObject:
   m_ObjectHideFlags: 0
