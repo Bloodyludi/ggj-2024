@@ -13,8 +13,10 @@ BeatManager (central clock)
 GameController (orchestrator)
   ├── Awake() ─────────> Services.Register(this)
   ├── Start() ─────────> Services.Get<*>() for all managers
-  ├── Start() ─────────> SoundManager.Init() (load song data)
+  ├── Start() ─────────> Reads SongSelector.SelectedSong (cross-scene bridge)
+  ├── Start() ─────────> SoundManager.Init(song) (explicit song param)
   ├── Start() ─────────> MapManager.SetDeadlyTileSpawns() (bridge song→map)
+  ├── Start() ─────────> MapManager.SetPickupConfig() (bridge song→map pickup settings)
   ├── StartMatch() ────> WaitUntil players spawned, then SoundManager.PlayMusic() + BeatManager.ShouldPerformTicks
   ├── AllPlayersDead() ─> 1.5s dramatic pause, snap timer to 0, then EvaluateGameOver
   ├── PauseGame() ─────> Time.timeScale toggle
@@ -26,23 +28,23 @@ PlayerManager (bootstrap)
 
 SoundManager (audio)
   ├── Awake() ─────> Services.Register(this)
-  ├── Init() ──────> Services.Get<BeatManager>(), checks SongLibrary.SelectedSong, sets up SFX map and song
-  ├── Init() ──────> Applies per-song beat window via BeatManager.SetMoveWindowTimePercent() if configured
+  ├── Init(song) ──> Services.Get<BeatManager>(), accepts SongLevelData param (falls back to Inspector-wired default), sets up SFX map
+  ├── Init(song) ──> Applies per-song beat window via BeatManager.SetMoveWindowTimePercent() if configured
   ├── MusicSource ──> AudioSource (drives BeatManager timing)
   ├── sfxSource ───> AudioSource (separate channel for SFX)
-  ├── CurrentSong ─> SongLevelData ScriptableObject (runtime-selected or Inspector fallback)
+  ├── CurrentSong ─> SongLevelData ScriptableObject (from Init param or Inspector fallback)
   └── PlaySfx() ───> One-shot sound effects with random clip selection
 
-SongLibrary (song selection, cross-scene)
-  ├── songs[] ─────> Array of SongLevelData assets (wired in Inspector)
-  └── static SelectedSong ──> Set by SongSelector in MainMenu, read by SoundManager.Init()
+SongLibrary (pure data container)
+  └── songs[] ─────> Array of SongLevelData assets (wired in Inspector)
 
-SongSelector (MainMenu UI)
+SongSelector (MainMenu UI + cross-scene bridge)
   ├── songLibrary ──> [SerializeField] SongLibrary asset
   ├── songNameText ─> [SerializeField] TMP_Text display ("Song: <name>")
+  ├── static SelectedSong ──> Set in ApplySelection(), read by GameController.Start()
   ├── OnSongChanged ─> event Action<SongLevelData> (fires on every selection change incl. Start)
-  ├── NextSong() ──> Cycles forward (wrap-around), sets SongLibrary.SelectedSong
-  └── PreviousSong() > Cycles backward (wrap-around), sets SongLibrary.SelectedSong
+  ├── NextSong() ──> Cycles forward (wrap-around), sets SelectedSong
+  └── PreviousSong() > Cycles backward (wrap-around), sets SelectedSong
 ```
 
 ## Reference Resolution Pattern
@@ -89,16 +91,19 @@ Centralizes per-song configuration that was previously scattered:
 - `startDelay` - delay before music starts
 - `moveWindowTimePercent` - per-song beat window override (%). `-1` = use BeatManager default (10%)
 - `deadlyTileSpawns` - array of TileSpawnConfig (timing, position, direction)
+- `pickupSpawnInterval` - seconds between cheese pickups (default 5.0)
+- `pickupComboReward` - combo bonus when cheese is collected (default 5)
 
-Created via Assets > Create > Lab Rats > Song Level Data. Referenced by SoundManager.
+Created via Assets > Create > Lab Rats > Song Level Data. Referenced by SoundManager and MapManager (via GameController).
 
 ## Song Selection (SongLibrary.cs + SongSelector.cs)
 
 Cross-scene song selection system:
-- **SongLibrary** (ScriptableObject): Holds array of `SongLevelData` assets. Created via Assets > Create > Lab Rats > Song Library.
-- **SongLibrary.SelectedSong** (static property): Set by SongSelector in MainMenu, read by SoundManager.Init(). Null if MainMenu was skipped (e.g., launching SampleScene directly from Editor).
+- **SongLibrary** (ScriptableObject): Pure data container holding array of `SongLevelData` assets. Created via Assets > Create > Lab Rats > Song Library. No static state.
+- **SongSelector.SelectedSong** (static property): Set by SongSelector in MainMenu, read by GameController.Start(). Null if MainMenu was skipped (e.g., launching SampleScene directly from Editor).
 - **SongSelector** (MonoBehaviour): MainMenu UI component with `NextSong()`/`PreviousSong()` methods (wired to buttons via Inspector). Displays `"Song: <name>"` via TMP_Text. Fires `OnSongChanged` event (`Action<SongLevelData>`) on every selection change (including initial `Start()`).
-- **Fallback**: If `SongLibrary.SelectedSong` is null, SoundManager uses its Inspector-wired `currentSong` field (backward-compatible).
+- **Song propagation**: GameController reads `SongSelector.SelectedSong` once in `Start()`, passes it explicitly to `SoundManager.Init(song)` and `MapManager.SetPickupConfig()`. No gameplay code reads statics directly.
+- **Fallback**: If `SongSelector.SelectedSong` is null, SoundManager uses its Inspector-wired `currentSong` field (backward-compatible).
 
 ## Player System (Partial Class: 3 files)
 
@@ -139,6 +144,7 @@ Cross-scene song selection system:
 - **Collision**: `ResolveBoardCollisions()` detects same-tile occupancy, stuns both players with Fisher-Yates shuffled directions
 - **Hustle clouds**: Particle effect spawned at collision point
 - **Tile spawns**: `SetDeadlyTileSpawns()` receives config from GameController (sourced from SongLevelData)
+- **Pickup config**: `SetPickupConfig(interval, comboReward)` receives per-song pickup settings from GameController. Overrides `[SerializeField]` defaults at runtime.
 - **Dependencies**: BeatManager resolved via `Services.Get<BeatManager>()` in `Awake()`; subscribes in `OnEnable()`/`OnDisable()`
 - **Tile init**: Calls `tile.Init(beatManager)` during grid creation in `Awake()`
 
@@ -179,8 +185,8 @@ Static class providing `PacedForLoop(float duration, Action<float>)`:
 
 ```
 MainMenu (MainMenuController + SongSelector)
-  ├── Song Selector ─> SongSelector cycles SongLibrary, sets SongLibrary.SelectedSong
-  ├── Start Game ────> SampleScene (SoundManager reads SelectedSong in Init())
+  ├── Song Selector ─> SongSelector cycles SongLibrary, sets SongSelector.SelectedSong
+  ├── Start Game ────> SampleScene (GameController reads SelectedSong, passes to Init methods)
   ├── How To ────────> HowTo scene (HowToController)
   ├── Credits ───────> Credits scene (CreditsController)
   └── Exit ──────────> Application.Quit() (no-op in WebGL)
@@ -208,6 +214,8 @@ Note: `StartMatch()` uses `WaitUntil(() => playerManager.PlayerStates.Count >= 2
 - Grid size: 5 x 8
 - Player start positions: P1 (row 3.6, col 3.5), P2 (row 3.6, col 11.5)
 - Movement animation duration: 20% of beat interval
+- Pickup spawn interval: 5.0 seconds (configurable per song via SongLevelData)
+- Pickup combo reward: 5 (configurable per song via SongLevelData)
 
 ## SFX Enum (SoundManager.Sfx)
 - `PlayerHit`, `BounceWater`, `BounceRat`, `BouncePlayer`

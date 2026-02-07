@@ -11,5 +11,9 @@ public class SongLevelData : ScriptableObject
     public float moveWindowTimePercent = -1;
     public TileSpawnConfig[] deadlyTileSpawns;
 
+    [Header("Pickup Settings")]
+    public float pickupSpawnInterval = 5.0f;
+    public int pickupComboReward = 5;
+
     public string DisplayName => string.IsNullOrEmpty(displayName) ? name : displayName;
 }

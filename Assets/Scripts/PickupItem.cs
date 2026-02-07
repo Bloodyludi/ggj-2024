@@ -21,7 +21,8 @@ public class PickupItem : MonoBehaviour
     [SerializeField] private float beatBouncePower = 0.2f; // How high it hops on beat
 
     // Logic State
-    public Vector2Int GridPosition; 
+    public Vector2Int GridPosition;
+    public int ComboReward = 5;
     private BeatManager beatManager;
     private bool isLandingFinished = false;
 
@@ -95,7 +96,7 @@ public class PickupItem : MonoBehaviour
     public void OnCollected(PlayerController player)
     {
         var state = player.GetComponent<PlayerState>();
-        if(state != null) state.ComboCounter += 5;
+        if(state != null) state.ComboCounter += ComboReward;
         Destroy(gameObject);
     }
 }

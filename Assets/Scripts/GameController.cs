@@ -39,8 +39,16 @@ public class GameController : MonoBehaviour
 
         Time.timeScale = 1f;
 
-        if (soundManager) soundManager.Init();
-        mapManager.SetDeadlyTileSpawns(soundManager.CurrentSong.deadlyTileSpawns);
+        var selectedSong = SongSelector.SelectedSong;
+        if (soundManager) soundManager.Init(selectedSong);
+
+        var song = soundManager.CurrentSong;
+        if (song != null)
+        {
+            mapManager.SetDeadlyTileSpawns(song.deadlyTileSpawns);
+            mapManager.SetPickupConfig(song.pickupSpawnInterval, song.pickupComboReward);
+        }
+
         StartCoroutine(StartMatch());
     }
 

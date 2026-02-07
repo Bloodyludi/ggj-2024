@@ -62,7 +62,7 @@ public class SoundManager : MonoBehaviour
         Services.Register(this);
     }
 
-    public void Init()
+    public void Init(SongLevelData song = null)
     {
         beatManager = Services.Get<BeatManager>();
         sfxMap.Clear();
@@ -76,8 +76,8 @@ public class SoundManager : MonoBehaviour
         sfxMap.Add(Sfx.Throw, throwSounds);
         sfxMap.Add(Sfx.Charging, chargingSounds);
 
-        if (SongLibrary.SelectedSong != null)
-            currentSong = SongLibrary.SelectedSong;
+        if (song != null)
+            currentSong = song;
 
         if (currentSong != null)
         {
