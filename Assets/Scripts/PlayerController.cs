@@ -1,9 +1,11 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public partial class PlayerController : MonoBehaviour
 {
     private PlayerState playerState;
+    [SerializeField] private PlayerInput playerInput;
     [SerializeField] private PlayerLocalAnimationController playerLocalAnimationController;
 
     private BeatManager beatManager;
@@ -29,32 +31,28 @@ public partial class PlayerController : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        if (playerState == null || !playerState.InputEnabled || beatManager == null) return;
+        if (playerInput != null)
+            playerInput.onActionTriggered += EventHandler;
+    }
 
-        Vector2 inputDir = Vector2.zero;
+    private void OnDisable()
+    {
+        if (playerInput != null)
+            playerInput.onActionTriggered -= EventHandler;
+    }
 
-        // Player 1 Controls (WASD)
-        if (playerState.PlayerIndex == 1)
+    private void EventHandler(InputAction.CallbackContext context)
+    {
+        if (!playerState.InputEnabled)
         {
-            if (Input.GetKeyDown(KeyCode.W)) inputDir = Vector2.up;
-            else if (Input.GetKeyDown(KeyCode.S)) inputDir = Vector2.down;
-            else if (Input.GetKeyDown(KeyCode.A)) inputDir = Vector2.left;
-            else if (Input.GetKeyDown(KeyCode.D)) inputDir = Vector2.right;
-        }
-        // Player 2 Controls (Arrows)
-        else if (playerState.PlayerIndex == 2)
-        {
-            if (Input.GetKeyDown(KeyCode.UpArrow)) inputDir = Vector2.up;
-            else if (Input.GetKeyDown(KeyCode.DownArrow)) inputDir = Vector2.down;
-            else if (Input.GetKeyDown(KeyCode.LeftArrow)) inputDir = Vector2.left;
-            else if (Input.GetKeyDown(KeyCode.RightArrow)) inputDir = Vector2.right;
+            return;
         }
 
-        if (inputDir != Vector2.zero)
+        if (context.action.name == "move" && context.phase == InputActionPhase.Started)
         {
-            AttemptMove(inputDir);
+            AttemptMove(context.ReadValue<Vector2>());
         }
     }
 

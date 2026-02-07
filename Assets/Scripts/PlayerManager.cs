@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class PlayerManager : MonoBehaviour
     private struct PlayerSpawnConfig
     {
         public int playerIndex;
+        public string controlScheme;
         public float spawnRow;
         public float spawnColumn;
         public int orientation;
@@ -20,8 +22,8 @@ public class PlayerManager : MonoBehaviour
 
     private static readonly PlayerSpawnConfig[] spawnConfigs =
     {
-        new() { playerIndex = 1, spawnRow = 3.6f, spawnColumn = 3.5f, orientation = 1, isPlayer2 = false },
-        new() { playerIndex = 2, spawnRow = 3.6f, spawnColumn = 11.5f, orientation = -1, isPlayer2 = true },
+        new() { playerIndex = 1, controlScheme = "Keyboard Left", spawnRow = 3.6f, spawnColumn = 3.5f, orientation = 1, isPlayer2 = false },
+        new() { playerIndex = 2, controlScheme = "Keyboard Right", spawnRow = 3.6f, spawnColumn = 11.5f, orientation = -1, isPlayer2 = true },
     };
 
     private void Awake()
@@ -35,19 +37,19 @@ public class PlayerManager : MonoBehaviour
 
         foreach (var config in spawnConfigs)
         {
-            var obj = Instantiate(playerPrefab);
-            var t = obj.transform;
+            var playerInput = PlayerInput.Instantiate(playerPrefab, playerIndex: config.playerIndex, controlScheme: config.controlScheme, pairWithDevice: Keyboard.current);
+            var t = playerInput.transform;
             t.name = $"Player {config.playerIndex}";
             t.parent = mapManager.dancefloor;
             t.position = mapManager.MapToWorld(config.spawnRow, config.spawnColumn);
 
-            var state = obj.GetComponent<PlayerState>();
+            var state = playerInput.GetComponent<PlayerState>();
             state.PlayerIndex = config.playerIndex;
             state.PlayerOrientation = config.orientation;
             state.IsPlayer2 = config.isPlayer2;
             PlayerStates.Add(state);
 
-            obj.GetComponent<PlayerController>().Init(mapManager);
+            playerInput.GetComponent<PlayerController>().Init(mapManager);
         }
     }
 
