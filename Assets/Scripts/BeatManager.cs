@@ -99,7 +99,7 @@ public class BeatManager : MonoBehaviour
         {
             LastBeatTime = currentTime;
             NextBeatTime = LastBeatTime + BeatInterval;
-            BeatCounter++;
+            BeatCounter = Mathf.FloorToInt(currentBeat);
             OnBeat?.Invoke();
             StartCoroutine(ScheduleAction(OnPreBeat, (float)(BeatInterval - MoveWindowSeconds)));
             StartCoroutine(ScheduleAction(OnPostBeat, (float)MoveWindowSeconds));

@@ -20,11 +20,14 @@ This is a **living document**. When you make changes that affect the project's a
 Assets/
   Scripts/           # All C# game scripts (flat structure, plus Utils/ subfolder)
     Utils/           # Vector2Extensions.cs
+    BeatDebugOverlay.cs    # Debug overlay: procedural beat window graph (toggle with ` key)
     CoroutineUtils.cs      # Shared PacedForLoop utility (WebGL-safe, yield return null)
     Services.cs            # Static service locator for manager cross-references
     SongLevelData.cs       # ScriptableObject for song configuration
     SongLibrary.cs         # ScriptableObject listing all available songs (pure data container)
     SongSelector.cs        # MainMenu UI component for cycling through songs
+  Shaders/           # Custom shaders
+    BeatDebugGraph.shader  # Procedural beat activation curve visualization
   SoundFX/
     SoundData/           # SongLevelData assets (Ludwig.asset, Ludwig 1.asset, Ludwig 2.asset)
   Scenes/            # SampleScene (gameplay), MainMenu, HowTo, Credits, FireInTheHole
@@ -51,6 +54,7 @@ Assets/
 | Animation | `PlayerAnimationController.cs`, `PlayerLocalAnimationController.cs` | Sprite animation + local movement (jump/bob) |
 | UI | `MainMenuController.cs`, `PauseScreen.cs`, `GameOverScreen.cs`, `ComboCounter.cs`, `CountdownTimer.cs` | Scene navigation, HUD |
 | Service Locator | `Services.cs` | Static registry for manager cross-references. Managers self-register in `Awake()`, look up via `Services.Get<T>()` |
+| Debug | `BeatDebugOverlay.cs`, `BeatDebugGraph.shader` | Runtime beat window visualization overlay. Procedural shader draws scrolling graph of beat activation function. Toggle with ` key. |
 | Utility | `CoroutineUtils.cs`, `Vector2Extensions.cs`, `ShakeOnBeat.cs`, `AutoDestroy.cs`, `MatchWidth.cs` | Shared coroutine helpers, extensions, camera shake, cleanup, aspect ratio |
 
 ## Key Design Patterns
