@@ -21,7 +21,8 @@ public class DancefloorTile : MonoBehaviour
 
     private void Awake()
     {
-        beatManager = GameObject.FindObjectOfType<BeatManager>();
+        // Fix: Use FindFirstObjectByType (New API)
+        beatManager = FindFirstObjectByType<BeatManager>();
     }
 
     public void SetDeadly(bool deadly)
@@ -45,14 +46,13 @@ public class DancefloorTile : MonoBehaviour
 
         while (true)
         {
-            var t = (float)(1f - (beatManager.NextBeatTime -
-#if !UNITY_WEBGL
-                                  AudioSettings.dspTime
-#else
-                                  Time.timeAsDouble
-#endif
+            if (beatManager == null)
+            {
+                yield return null;
+                continue;
+            }
 
-                ) / beatManager.BeatInterval);
+            var t = (float)(1f - (beatManager.NextBeatTime - beatManager.GetCurrentTime()) / beatManager.BeatInterval);
 
             if (isDeadly)
             {

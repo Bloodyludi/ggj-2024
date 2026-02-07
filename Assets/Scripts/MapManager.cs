@@ -33,7 +33,9 @@ public partial class MapManager : MonoBehaviour
 
     private void Awake()
     {
-        beatManager = GameObject.Find("SoundManager").GetComponent<BeatManager>();
+        // Fix: Use FindFirstObjectByType (New API)
+        beatManager = FindFirstObjectByType<BeatManager>();
+        
         tiles = new DancefloorTile[width * height];
 
         for (var y = 0; y < height; y++)
@@ -57,7 +59,9 @@ public partial class MapManager : MonoBehaviour
 
     private void AddListeners()
     {
-        beatManager = FindObjectOfType<BeatManager>();
+        // Redundant find removed, just ensuring it's not null
+        if(beatManager == null) beatManager = FindFirstObjectByType<BeatManager>();
+        
         beatManager.OnPostBeat -= ResolveBoardCollisions;
         beatManager.OnPostBeat += ResolveBoardCollisions;
         beatManager.OnPostBeat -= UpdateDeadlyTiles;

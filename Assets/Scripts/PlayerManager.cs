@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -11,26 +10,32 @@ public class PlayerManager : MonoBehaviour
 
     private void Start()
     {
-        var p1 = PlayerInput.Instantiate(playerPrefab, playerIndex: 1, controlScheme: "Keyboard Left", pairWithDevice: Keyboard.current);
-        var p1Transform = p1.transform;
-        p1Transform.name = "Player 1";
-        p1Transform.parent = mapManager.dancefloor;
-        p1Transform.position = mapManager.MapToWorld(3.6f, 3.5f);
-        player1State = p1.GetComponent<PlayerState>();
+        // --- Player 1 ---
+        GameObject p1Obj = Instantiate(playerPrefab);
+        p1Obj.name = "Player 1";
+        p1Obj.transform.parent = mapManager.dancefloor;
+        p1Obj.transform.position = mapManager.MapToWorld(3.6f, 3.5f);
+        
+        player1State = p1Obj.GetComponent<PlayerState>();
+        player1State.PlayerIndex = 1; // Assign ID
+        player1State.IsPlayer2 = false;
         player1State.PlayerOrientation = 1;
 
-        var p2 = PlayerInput.Instantiate(playerPrefab, playerIndex: 2, controlScheme: "Keyboard Right", pairWithDevice: Keyboard.current);
-        p2.transform.parent = mapManager.dancefloor;
-        player2State = p2.GetComponent<PlayerState>();
-        player2State.PlayerOrientation = -1;
-        p2.transform.position = mapManager.MapToWorld(3.6f,11.5f);
-        p2.transform.name = "Player 2";
+        // --- Player 2 ---
+        GameObject p2Obj = Instantiate(playerPrefab);
+        p2Obj.name = "Player 2";
+        p2Obj.transform.parent = mapManager.dancefloor;
+        p2Obj.transform.position = mapManager.MapToWorld(3.6f, 11.5f);
+
+        player2State = p2Obj.GetComponent<PlayerState>();
+        player2State.PlayerIndex = 2; // Assign ID
         player2State.IsPlayer2 = true;
+        player2State.PlayerOrientation = -1;
     }
 
     public void EnablePlayerInput(bool enable)
     {
-        player1State.InputEnabled = enable;
-        player2State.InputEnabled = enable;
+        if(player1State) player1State.InputEnabled = enable;
+        if(player2State) player2State.InputEnabled = enable;
     }
 }

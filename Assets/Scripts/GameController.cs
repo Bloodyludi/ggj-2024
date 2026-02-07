@@ -12,7 +12,6 @@ public enum GameResult
 
 public class GameController : MonoBehaviour
 {
-    public event Action OnCustomUpdate;
     [SerializeField] private PlayerManager playerManager;
     [SerializeField] private MapManager mapManager;
     [SerializeField] private GameOverScreen gameOverScreen;
@@ -20,48 +19,54 @@ public class GameController : MonoBehaviour
     [SerializeField] private SoundManager soundManager;
     [SerializeField] private BeatManager beatManager;
     [SerializeField] private int matchDurationSeconds = 180;
-    [SerializeField] private int musicSpeedUpThreshold = 60;
 
     private float matchTimeElapsed;
-    private bool isSpeedUpTriggered1;
-    private bool isSpeedUpTriggered2;
 
     public bool IsGameOver { get; private set; } = false;
     public GameResult gameResult = GameResult.Draw;
 
-    private void Awake()
+    private void Start()
     {
+        // Changed from Awake to Start to give other scripts time to initialize
         Time.timeScale = 1f;
-
-        isSpeedUpTriggered1 = false;
-        isSpeedUpTriggered2 = false;
-        soundManager.Init();
+        if(soundManager) soundManager.Init();
         StartCoroutine(StartMatch());
-
     }
 
     private IEnumerator StartMatch()
     {
-        soundManager.PlayMusic();
-        beatManager.ShouldPerformTicks = true;
+        // --- SAFETY WAIT ---
+        // Wait until players are spawned by PlayerManager
+        yield return new WaitUntil(() => playerManager.player1State != null && playerManager.player2State != null);
+        
+        if(soundManager) soundManager.PlayMusic();
+        if(beatManager) beatManager.ShouldPerformTicks = true;
+        
         while (true)
         {
             var timeLeft = matchDurationSeconds - matchTimeElapsed;
-            countdownTimer.UpdateTimeLeft(timeLeft);
+            if(countdownTimer) countdownTimer.UpdateTimeLeft(timeLeft);
 
             matchTimeElapsed += Time.deltaTime;
 
-            if (matchTimeElapsed > 5f &&
-                playerManager.player1State.CurrentStateEnum == PlayerStateEnum.Dead
-                && playerManager.player2State.CurrentStateEnum == PlayerStateEnum.Dead)
+            // Death Wait Logic
+            if (playerManager.player1State != null && playerManager.player2State != null &&
+                playerManager.player1State.CurrentStateEnum == PlayerStateEnum.Dead && 
+                playerManager.player2State.CurrentStateEnum == PlayerStateEnum.Dead)
             {
-                Time.timeScale = Mathf.Lerp(Time.timeScale, 6f, Time.deltaTime * 0.2f);
+                // Pause for dramatic effect
+                yield return new WaitForSeconds(1.5f);
+
+                // Snap timer to 0
+                if(countdownTimer) countdownTimer.UpdateTimeLeft(0);
+
+                EvaluateGameOver();
+                yield break; 
             }
 
             if (matchTimeElapsed > matchDurationSeconds)
             {
                 EvaluateGameOver();
-
                 yield break;
             }
 
@@ -71,18 +76,22 @@ public class GameController : MonoBehaviour
 
     public void GameOver()
     {
-        beatManager.ShouldPerformTicks = false;
+        if(beatManager) beatManager.ShouldPerformTicks = false;
         PauseGame(true);
-        gameOverScreen.Show(gameResult);
+        if(gameOverScreen) gameOverScreen.Show(gameResult);
         IsGameOver = true;
     }
 
     private void EvaluateGameOver()
     {
+        // Defensive checks
+        if (playerManager.player1State == null || playerManager.player2State == null) return;
+
         var p1Dead = playerManager.player1State.CurrentStateEnum == PlayerStateEnum.Dead;
         var p2Dead = playerManager.player2State.CurrentStateEnum == PlayerStateEnum.Dead;
         var p1ComboCount = playerManager.player1State.ComboCounter;
         var p2ComboCount = playerManager.player2State.ComboCounter;
+        
         if (p1Dead && p2Dead)
         {
             gameResult = GameResult.Lose;

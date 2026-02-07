@@ -12,22 +12,24 @@ public class ShakeOnBeat : MonoBehaviour
 
     private void Awake()
     {
-        beatManager = FindObjectOfType<BeatManager>();
+        // Fix: Use FindFirstObjectByType (New API)
+        beatManager = FindFirstObjectByType<BeatManager>();
     }
 
     private void OnDisable()
     {
-        beatManager.OnBeat -= OnBeatManagerOnOnBeat;
+        if(beatManager) beatManager.OnBeat -= OnBeatManagerOnOnBeat;
     }
 
     private void OnEnable()
     {
-        beatManager.OnBeat += OnBeatManagerOnOnBeat;
+        if(beatManager) beatManager.OnBeat += OnBeatManagerOnOnBeat;
     }
 
     void OnBeatManagerOnOnBeat()
     {
-        StartCoroutine(Shake(beatManager.MoveWindowSeconds * percentOfWindowSeconds, magnitude));
+        if(beatManager)
+            StartCoroutine(Shake(beatManager.MoveWindowSeconds * percentOfWindowSeconds, magnitude));
     }
 
 

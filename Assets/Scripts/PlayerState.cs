@@ -14,13 +14,17 @@ public class PlayerState : MonoBehaviour
 {
     [SerializeField] private ComboCounter comboCounterLabel;
     
+    // --- ADDED: Required for PlayerController to identify P1 vs P2 ---
+    public int PlayerIndex = 1; 
+
     public int ComboCounter
     {
         get => comboCounter;
         set
         {
             comboCounter = value;
-            comboCounterLabel.UpdateComboCount(comboCounter);
+            if(comboCounterLabel != null)
+                comboCounterLabel.UpdateComboCount(comboCounter);
 
             if (CurrentStateEnum == PlayerStateEnum.Dead ||
                 CurrentStateEnum == PlayerStateEnum.Brawl ||
