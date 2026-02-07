@@ -17,11 +17,21 @@ public class DancefloorTile : MonoBehaviour
     private BeatManager beatManager;
     private float pulsatingJitter;
 
+    // --- NEW: Proximity Glow State ---
+    private Color proximityColor = Color.black;
+
     public float TileSize => ren.sprite.bounds.size.x;
 
     public void Init(BeatManager beatManager)
     {
         this.beatManager = beatManager;
+    }
+
+    // --- NEW: Set intensity of red bleed ---
+    public void SetGlow(float intensity)
+    {
+        // Blends between black (no effect) and pure red
+        proximityColor = Color.Lerp(Color.black, new Color(1f, 0f, 0f, 0f), intensity);
     }
 
     public void SetDeadly(bool deadly)
@@ -53,14 +63,18 @@ public class DancefloorTile : MonoBehaviour
 
             var t = (float)(1f - (beatManager.NextBeatTime - beatManager.GetCurrentTime()) / beatManager.BeatInterval);
 
+            Color baseColor;
             if (isDeadly)
             {
-                ren.color = Color.Lerp(Color.white, Color.white * (0.8f - pulsatingJitter), t);
+                baseColor = Color.Lerp(Color.white, Color.white * (0.8f - pulsatingJitter), t);
             }
             else
             {
-                ren.color = Color.Lerp(Color.white * (0.8f - pulsatingJitter), Color.white, t);
+                baseColor = Color.Lerp(Color.white * (0.8f - pulsatingJitter), Color.white, t);
             }
+
+            // --- FIXED: Add the base beat color to the proximity glow ---
+            ren.color = baseColor + proximityColor;
 
             if (t >= 0.96f)
             {

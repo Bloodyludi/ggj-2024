@@ -93,9 +93,18 @@ public class PickupItem : MonoBehaviour
     }
 
     public void OnCollected(PlayerController player)
+{
+    var state = player.GetComponent<PlayerState>();
+    if (state != null) state.ComboCounter += 5;
+
+    // --- NEW: Play the pickup sound ---
+    var soundManager = Services.Get<SoundManager>();
+    if (soundManager != null)
     {
-        var state = player.GetComponent<PlayerState>();
-        if(state != null) state.ComboCounter += 5;
-        Destroy(gameObject);
+        soundManager.PlaySfx(SoundManager.Sfx.Pickup);
     }
+
+    Debug.Log($"{player.name} collected the Cheese!");
+    Destroy(gameObject);
+}
 }

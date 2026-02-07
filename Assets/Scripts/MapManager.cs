@@ -24,7 +24,6 @@ public partial class MapManager : MonoBehaviour
     
     [SerializeField] private TileSpawnConfig[] deadlyTileSpawns;
 
-    // --- NEW: Added for GameController compatibility ---
     public void SetDeadlyTileSpawns(TileSpawnConfig[] spawns)
     {
         deadlyTileSpawns = spawns;
@@ -145,6 +144,35 @@ public partial class MapManager : MonoBehaviour
         MoveDeadlyTiles();
         ResolvePlayerDeaths();
         SpawnNewTiles();
+        // --- RESTORED: Glow Logic ---
+        ApplyGlowEffect();
+    }
+
+    private void ApplyGlowEffect()
+    {
+        foreach (var tile in tiles)
+        {
+            tile.SetGlow(0f);
+        }
+
+        foreach (var tile in tiles)
+        {
+            if (!tile.isDeadly) continue;
+
+            Vector2Int pos = tile.position;
+            Vector2Int[] neighbors = {
+                pos + Vector2Int.up, pos + Vector2Int.down,
+                pos + Vector2Int.left, pos + Vector2Int.right
+            };
+
+            foreach (var nPos in neighbors)
+            {
+                if (nPos.x >= 0 && nPos.x < width && nPos.y >= 0 && nPos.y < height)
+                {
+                    tiles[GetTileIndex(nPos)].SetGlow(0.4f);
+                }
+            }
+        }
     }
 
     private void MoveDeadlyTiles()
@@ -296,7 +324,6 @@ public partial class MapManager : MonoBehaviour
         float bH = height * TileSize;
         float col = (worldPos.x - origin.x) / (bW - origin.x) * bW;
         float row = (worldPos.y - origin.y) / (bH - origin.y) * bH;
-        // FIXED: Changed 'column' to 'col' to match local variable
         return new Vector2Int(Mathf.FloorToInt(row), Mathf.FloorToInt(col));
     }
 

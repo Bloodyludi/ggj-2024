@@ -16,7 +16,8 @@ public class SoundManager : MonoBehaviour
         Pulled,
         Landing,
         Charging,
-        Throw
+        Throw,
+        Pickup // 1. Enum entry is correct
     }
 
     public AudioSource MusicSource;
@@ -26,32 +27,18 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private SongLevelData currentSong;
 
     [Header("SFX")]
-    [FormerlySerializedAs("carrotHit")]
     [SerializeField] private List<AudioClip> hitSounds;
-
-    [FormerlySerializedAs("carrotBounceWater")]
     [SerializeField] private List<AudioClip> bounceWaterSounds;
-
-    [FormerlySerializedAs("carrotBounceCarrot")]
     [SerializeField] private List<AudioClip> bounceRatSounds;
-
-    [FormerlySerializedAs("carrotBouncePlayer")]
     [SerializeField] private List<AudioClip> bouncePlayerSounds;
-
-    [FormerlySerializedAs("carrotPulling")]
     [SerializeField] private List<AudioClip> pullingSounds;
-
-    [FormerlySerializedAs("carrotPulled")]
     [SerializeField] private List<AudioClip> pulledSounds;
-
-    [FormerlySerializedAs("carrotLanding")]
     [SerializeField] private List<AudioClip> landingSounds;
-
-    [FormerlySerializedAs("carrotThrow")]
     [SerializeField] private List<AudioClip> throwSounds;
-
-    [FormerlySerializedAs("carrotCharging")]
     [SerializeField] private List<AudioClip> chargingSounds;
+    
+    // 2. ADD THIS: This creates the slot in the Inspector for your cheese sound
+    [SerializeField] private List<AudioClip> pickupSounds; 
 
     private Dictionary<Sfx, List<AudioClip>> sfxMap = new();
 
@@ -75,18 +62,21 @@ public class SoundManager : MonoBehaviour
         sfxMap.Add(Sfx.Landing, landingSounds);
         sfxMap.Add(Sfx.Throw, throwSounds);
         sfxMap.Add(Sfx.Charging, chargingSounds);
+        
+        // 3. ADD THIS: Maps the Enum to the list of clips
+        sfxMap.Add(Sfx.Pickup, pickupSounds); 
 
         if (SongLibrary.SelectedSong != null)
             currentSong = SongLibrary.SelectedSong;
 
         if (currentSong != null)
         {
-            MusicSource.clip = currentSong.musicClip;
-            MusicSource.loop = true;
-            beatManager.SetBPM(currentSong.bpm);
+             MusicSource.clip = currentSong.musicClip;
+             MusicSource.loop = true;
+             beatManager.SetBPM(currentSong.bpm);
 
-            if (currentSong.moveWindowTimePercent > 0)
-                beatManager.SetMoveWindowTimePercent(currentSong.moveWindowTimePercent);
+             if (currentSong.moveWindowTimePercent > 0)
+                 beatManager.SetMoveWindowTimePercent(currentSong.moveWindowTimePercent);
         }
     }
 
@@ -95,16 +85,17 @@ public class SoundManager : MonoBehaviour
         MusicSource.PlayDelayed(currentSong.startDelay);
     }
 
-
     public void PlaySfx(Sfx sound, float volumeScale = 3.5f)
     {
         var sfx = GetSfxClip(sound);
-        sfxSource.PlayOneShot(sfx, volumeScale);
+        if (sfx != null) // Safety check
+            sfxSource.PlayOneShot(sfx, volumeScale);
     }
 
     private AudioClip GetSfxClip(Sfx sound)
     {
-        if (sfxMap[sound].Count == 0)
+        // Safety check to prevent errors if the list is empty
+        if (!sfxMap.ContainsKey(sound) || sfxMap[sound].Count == 0)
         {
             return null;
         }
