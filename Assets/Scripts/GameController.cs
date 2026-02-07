@@ -39,31 +39,41 @@ public class GameController : MonoBehaviour
 
         Time.timeScale = 1f;
 
-        soundManager.Init();
+        if (soundManager) soundManager.Init();
         mapManager.SetDeadlyTileSpawns(soundManager.CurrentSong.deadlyTileSpawns);
         StartCoroutine(StartMatch());
     }
 
     private IEnumerator StartMatch()
     {
-        soundManager.PlayMusic();
-        beatManager.ShouldPerformTicks = true;
+        // Wait until players are spawned by PlayerManager
+        yield return new WaitUntil(() => playerManager.PlayerStates.Count >= 2);
+
+        if (soundManager) soundManager.PlayMusic();
+        if (beatManager) beatManager.ShouldPerformTicks = true;
+
         while (true)
         {
             var timeLeft = matchDurationSeconds - matchTimeElapsed;
-            countdownTimer.UpdateTimeLeft(timeLeft);
+            if (countdownTimer) countdownTimer.UpdateTimeLeft(timeLeft);
 
             matchTimeElapsed += Time.deltaTime;
 
-            if (matchTimeElapsed > 5f && AllPlayersDead())
+            if (AllPlayersDead())
             {
-                Time.timeScale = Mathf.Lerp(Time.timeScale, 6f, Time.deltaTime * 0.2f);
+                // Pause for dramatic effect
+                yield return new WaitForSeconds(1.5f);
+
+                // Snap timer to 0
+                if (countdownTimer) countdownTimer.UpdateTimeLeft(0);
+
+                EvaluateGameOver();
+                yield break;
             }
 
             if (matchTimeElapsed > matchDurationSeconds)
             {
                 EvaluateGameOver();
-
                 yield break;
             }
 
@@ -84,19 +94,22 @@ public class GameController : MonoBehaviour
 
     public void GameOver()
     {
-        beatManager.ShouldPerformTicks = false;
+        if (beatManager) beatManager.ShouldPerformTicks = false;
         PauseGame(true);
-        gameOverScreen.Show(gameResult);
+        if (gameOverScreen) gameOverScreen.Show(gameResult);
         IsGameOver = true;
     }
 
     private void EvaluateGameOver()
     {
         var states = playerManager.PlayerStates;
+        if (states.Count < 2) return;
+
         var p1Dead = states[0].CurrentStateEnum == PlayerStateEnum.Dead;
         var p2Dead = states[1].CurrentStateEnum == PlayerStateEnum.Dead;
         var p1ComboCount = states[0].ComboCounter;
         var p2ComboCount = states[1].ComboCounter;
+
         if (p1Dead && p2Dead)
         {
             gameResult = GameResult.Lose;

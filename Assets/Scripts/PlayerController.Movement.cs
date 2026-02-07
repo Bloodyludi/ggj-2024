@@ -1,42 +1,45 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public partial class PlayerController
 {
     private float moveRecordTime = 0;
     private IEnumerator currentMoveRoutine;
 
-    private void OnMoveRegistered(InputAction.CallbackContext context)
+    public void AttemptMove(Vector2 direction)
     {
         var time = beatManager.GetCurrentTime();
+
         if (time <= blockedUntil)
         {
             return;
         }
 
-        if (playerState.CanWalk && context.phase == InputActionPhase.Started)
+        if (playerState.CanWalk)
         {
             moveRecordTime = time;
-            moveDir = context.ReadValue<Vector2>();
+            moveDir = direction;
 
             var lapsedTimeSinceBeat = moveRecordTime - beatManager.LastBeatTime;
             var timeUntilNextBeat = beatManager.NextBeatTime - moveRecordTime;
-            var moveWindowSeconds = beatManager.MoveWindowTimePercent * beatManager.BeatInterval / 100;
 
-            if (lapsedTimeSinceBeat <= moveWindowSeconds)
+            var moveWindow = (float)beatManager.MoveWindowSeconds;
+
+            bool hitBeat = (lapsedTimeSinceBeat <= moveWindow) || (timeUntilNextBeat <= moveWindow);
+
+            if (hitBeat)
             {
-//                Debug.Log($"Moving after beat: {lapsedTimeSinceBeat}");
-                blockedUntil = beatManager.LastBeatTime + moveWindowSeconds;
+                if (lapsedTimeSinceBeat <= moveWindow)
+                    blockedUntil = beatManager.LastBeatTime + moveWindow;
+                else
+                    blockedUntil = beatManager.NextBeatTime + moveWindow;
+
                 MoveOnBeat();
-                return;
             }
-
-            if (timeUntilNextBeat <= moveWindowSeconds)
+            else
             {
-              //  Debug.Log($"Moving before beat: {timeUntilNextBeat}");
-                blockedUntil = beatManager.NextBeatTime + moveWindowSeconds;
-                MoveOnBeat();
+                playerState.ComboCounter = 0;
+                blockedUntil = time + 0.1f;
             }
         }
     }
@@ -44,7 +47,6 @@ public partial class PlayerController
     private void MoveOnBeat()
     {
         playerState.ComboCounter++;
-
         RestartRoutine(Move(moveDir, true));
         UpdateSpriteDirection();
     }
@@ -63,7 +65,6 @@ public partial class PlayerController
         float movementDuration = beatManager.BeatInterval * 0.2f;
         var position = transform.position;
         Vector2 ogPos = position;
-        Vector2 currentPosition = ogPos;
 
         if (AnimatesSprites)
         {
@@ -72,17 +73,15 @@ public partial class PlayerController
 
         yield return CoroutineUtils.PacedForLoop(movementDuration, lapsedPercent =>
         {
-            currentPosition = ogPos + moveDir * lapsedPercent * mapManager.TileSize;
+            var currentPosition = ogPos + moveDir * lapsedPercent * mapManager.TileSize;
             transform.position = mapManager.GetLoopPosition(currentPosition);
         });
 
-        position = ogPos + (Vector2)direction * mapManager.TileSize;
+        position = ogPos + direction * mapManager.TileSize;
         position = mapManager.GetLoopPosition(position);
         transform.position = position;
         mapManager.OnPlayerPositionUpdated(this);
-
         currentMoveRoutine = null;
-        yield return null;
     }
 
     private void HandleLocalAnimations(Vector2 direction, float movementDuration)
@@ -91,23 +90,18 @@ public partial class PlayerController
         {
             StartCoroutine(playerLocalAnimationController.Jump(movementDuration));
         }
-
-        switch (direction.y)
+        else if (direction.y > 0)
         {
-            case > 0:
-                StartCoroutine(playerLocalAnimationController.MoveUp(movementDuration));
-                break;
-            case < 0:
-                StartCoroutine(playerLocalAnimationController.MoveDown(movementDuration));
-                break;
+            StartCoroutine(playerLocalAnimationController.MoveUp(movementDuration));
+        }
+        else if (direction.y < 0)
+        {
+            StartCoroutine(playerLocalAnimationController.MoveDown(movementDuration));
         }
     }
 
     private void CheckPlayerMoved()
     {
-        if (moveRecordTime < beatManager.LastBeatTime - beatManager.MoveWindowSeconds || moveRecordTime > beatManager.LastBeatTime + beatManager.MoveWindowSeconds)
-        {
-            playerState.ComboCounter = 0;
-        }
+        // Miss logic handled in AttemptMove
     }
 }

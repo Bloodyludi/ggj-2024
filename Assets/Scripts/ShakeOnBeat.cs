@@ -11,19 +11,19 @@ public class ShakeOnBeat : MonoBehaviour
     private void OnEnable()
     {
         beatManager = Services.Get<BeatManager>();
-        beatManager.OnBeat += OnBeatManagerOnOnBeat;
+        if (beatManager) beatManager.OnBeat += OnBeatManagerOnOnBeat;
     }
 
     private void OnDisable()
     {
-        beatManager.OnBeat -= OnBeatManagerOnOnBeat;
+        if (beatManager) beatManager.OnBeat -= OnBeatManagerOnOnBeat;
     }
 
     void OnBeatManagerOnOnBeat()
     {
-        StartCoroutine(Shake(beatManager.MoveWindowSeconds * percentOfWindowSeconds, magnitude));
+        if (beatManager)
+            StartCoroutine(Shake(beatManager.MoveWindowSeconds * percentOfWindowSeconds, magnitude));
     }
-
 
     public IEnumerator Shake(double duration, float magnitude)
     {

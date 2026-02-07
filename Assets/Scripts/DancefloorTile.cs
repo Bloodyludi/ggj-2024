@@ -45,7 +45,13 @@ public class DancefloorTile : MonoBehaviour
 
         while (true)
         {
-            var t = (float)(1f - (beatManager.NextBeatTime - Time.timeAsDouble) / beatManager.BeatInterval);
+            if (beatManager == null)
+            {
+                yield return null;
+                continue;
+            }
+
+            var t = (float)(1f - (beatManager.NextBeatTime - beatManager.GetCurrentTime()) / beatManager.BeatInterval);
 
             if (isDeadly)
             {

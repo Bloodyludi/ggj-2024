@@ -43,6 +43,7 @@ public partial class MapManager : MonoBehaviour
     {
         Services.Register(this);
         beatManager = Services.Get<BeatManager>();
+
         tiles = new DancefloorTile[width * height];
 
         for (var y = 0; y < height; y++)
@@ -65,7 +66,11 @@ public partial class MapManager : MonoBehaviour
 
     private void OnEnable()
     {
+        if (beatManager == null) beatManager = Services.Get<BeatManager>();
+
+        beatManager.OnPostBeat -= ResolveBoardCollisions;
         beatManager.OnPostBeat += ResolveBoardCollisions;
+        beatManager.OnPostBeat -= UpdateDeadlyTiles;
         beatManager.OnPostBeat += UpdateDeadlyTiles;
     }
 

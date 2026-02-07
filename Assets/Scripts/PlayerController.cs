@@ -1,12 +1,11 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public partial class PlayerController : MonoBehaviour
 {
-    [SerializeField] private PlayerState playerState;
-    [SerializeField] private PlayerInput playerInput;
+    private PlayerState playerState;
     [SerializeField] private PlayerLocalAnimationController playerLocalAnimationController;
+
     private BeatManager beatManager;
     private Vector2 moveDir = Vector2.zero;
 
@@ -17,44 +16,48 @@ public partial class PlayerController : MonoBehaviour
 
     public void Init(MapManager mapManager)
     {
+        playerState = GetComponent<PlayerState>();
         this.soundManager = Services.Get<SoundManager>();
         this.beatManager = Services.Get<BeatManager>();
         this.mapManager = mapManager;
         mapManager.RegisterPlayer(this);
-    }
 
-    private void OnEnable()
-    {
-        playerInput.onActionTriggered += EventHandler;
         if (beatManager != null)
         {
+            beatManager.OnPostBeat -= CheckPlayerMoved;
             beatManager.OnPostBeat += CheckPlayerMoved;
         }
     }
 
-    private void OnDisable()
+    private void Update()
     {
-        playerInput.onActionTriggered -= EventHandler;
-        if (beatManager != null)
+        if (playerState == null || !playerState.InputEnabled || beatManager == null) return;
+
+        Vector2 inputDir = Vector2.zero;
+
+        // Player 1 Controls (WASD)
+        if (playerState.PlayerIndex == 1)
         {
-            beatManager.OnPostBeat -= CheckPlayerMoved;
+            if (Input.GetKeyDown(KeyCode.W)) inputDir = Vector2.up;
+            else if (Input.GetKeyDown(KeyCode.S)) inputDir = Vector2.down;
+            else if (Input.GetKeyDown(KeyCode.A)) inputDir = Vector2.left;
+            else if (Input.GetKeyDown(KeyCode.D)) inputDir = Vector2.right;
+        }
+        // Player 2 Controls (Arrows)
+        else if (playerState.PlayerIndex == 2)
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow)) inputDir = Vector2.up;
+            else if (Input.GetKeyDown(KeyCode.DownArrow)) inputDir = Vector2.down;
+            else if (Input.GetKeyDown(KeyCode.LeftArrow)) inputDir = Vector2.left;
+            else if (Input.GetKeyDown(KeyCode.RightArrow)) inputDir = Vector2.right;
+        }
+
+        if (inputDir != Vector2.zero)
+        {
+            AttemptMove(inputDir);
         }
     }
 
-    private void EventHandler(InputAction.CallbackContext context)
-    {
-        if (!playerState.InputEnabled)
-        {
-            return;
-        }
-
-        switch (context.action.name)
-        {
-            case "move":
-                OnMoveRegistered(context);
-                break;
-        }
-    }
     private void RestartRoutine(IEnumerator routine)
     {
         if (currentMoveRoutine != null)
@@ -62,7 +65,7 @@ public partial class PlayerController : MonoBehaviour
             StopCoroutine(currentMoveRoutine);
         }
 
-        currentMoveRoutine =routine;
+        currentMoveRoutine = routine;
         StartCoroutine(currentMoveRoutine);
     }
 
