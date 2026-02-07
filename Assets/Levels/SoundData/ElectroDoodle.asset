@@ -57,5 +57,5 @@ MonoBehaviour:
   - spawnTimeSeconds: 36
     spawnPosition: {x: 3, y: 4}
     movementDirection: {x: -1, y: 0}
-  pickupSpawnInterval: 5
+  pickupSpawnInterval: 10
   pickupComboReward: 5

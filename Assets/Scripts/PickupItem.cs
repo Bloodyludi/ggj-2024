@@ -18,19 +18,22 @@ public class PickupItem : MonoBehaviour
     [SerializeField] private Vector2 gripOffset; 
 
     [Header("Beat Bounce")]
-    [SerializeField] private float beatBouncePower = 0.2f; // How high it hops on beat
+    [SerializeField] private float beatBouncePower = 0.2f;
+    [SerializeField] private float beatScaleBoost = 0.3f;
 
     // Logic State
     public Vector2Int GridPosition;
     public int ComboReward = 5;
     private BeatManager beatManager;
     private bool isLandingFinished = false;
+    private Vector3 visualBaseScale;
 
     private void Start()
     {
-        // Get the BeatManager via Services (matching coworker's style)
         beatManager = Services.Get<BeatManager>();
-        
+        if (visualTransform != null)
+            visualBaseScale = visualTransform.localScale;
+
         transform.localPosition += (Vector3)gripOffset;
         StartCoroutine(AnimateEntrance());
     }
@@ -50,11 +53,34 @@ public class PickupItem : MonoBehaviour
             // Apply the hover height + the rhythmic hop
             visualTransform.localPosition = new Vector3(0, hoverHeight + hop, 0);
 
-            // Optional: Scale the shadow slightly to match the height
+            // Beat-window scale: grows when window opens, peaks on beat, shrinks when window closes
+            float windowFrac = beatManager.MoveWindowTimePercent / 100f;
+            float beatScale = 1.0f;
+
+            if (windowFrac > 0f)
+            {
+                if (progress <= windowFrac)
+                {
+                    // Post-beat: scale down from max to normal
+                    float t = progress / windowFrac;
+                    float smooth = t * t * (3f - 2f * t);
+                    beatScale = 1.0f + beatScaleBoost * (1.0f - smooth);
+                }
+                else if (progress >= (1.0f - windowFrac))
+                {
+                    // Pre-beat: scale up from normal to max
+                    float t = (progress - (1.0f - windowFrac)) / windowFrac;
+                    float smooth = t * t * (3f - 2f * t);
+                    beatScale = 1.0f + beatScaleBoost * smooth;
+                }
+            }
+
+            visualTransform.localScale = visualBaseScale * beatScale;
+
+            // Shadow shrinks slightly as the cheese gets higher
             if (shadowTransform != null)
             {
-                // Shadow shrinks slightly as the cheese gets higher
-                float shadowScale = 1.0f - (hop * 0.4f); 
+                float shadowScale = 1.0f - (hop * 0.4f);
                 shadowTransform.localScale = new Vector3(shadowScale, shadowScale, 1f);
             }
         }

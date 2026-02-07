@@ -9,7 +9,6 @@ public class BeatManager : MonoBehaviour
     public event Action OnBeat;
     public event Action OnPostBeat;
 
-    [SerializeField] private GameObject beatDebug;
     private SoundManager soundManager;
     [SerializeField, Range(0, 180)] private float bpm = 120.0f;
     [Range(1, 50)] public float MoveWindowTimePercent = 10;
@@ -28,8 +27,6 @@ public class BeatManager : MonoBehaviour
     private void Awake()
     {
         Services.Register(this);
-        OnBeat -= ScaleDebugElement;
-        OnBeat += ScaleDebugElement;
     }
 
     private void Start()
@@ -73,9 +70,6 @@ public class BeatManager : MonoBehaviour
 
     private void Update()
     {
-        if (beatDebug != null)
-            beatDebug.transform.localScale = Vector3.Lerp(beatDebug.transform.localScale, Vector3.one, Time.deltaTime * 2f);
-
         if (gameController == null || gameController.IsGameOver)
         {
             return;
@@ -112,15 +106,4 @@ public class BeatManager : MonoBehaviour
         action?.Invoke();
     }
 
-    public void DebugBeatRange(Color c)
-    {
-        if (beatDebug != null)
-            beatDebug.GetComponent<Renderer>().material.color = c;
-    }
-
-    public void ScaleDebugElement()
-    {
-        if (beatDebug != null)
-            beatDebug.transform.localScale = Vector3.one * UnityEngine.Random.Range(1.3f, 1.5f);
-    }
 }

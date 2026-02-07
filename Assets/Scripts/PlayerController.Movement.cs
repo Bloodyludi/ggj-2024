@@ -39,7 +39,7 @@ public partial class PlayerController
             else
             {
                 playerState.ComboCounter = 0;
-                blockedUntil = time + 0.1f;
+                blockedUntil = time; // + beatManager.BeatInterval * 0.05f;
             }
         }
     }
