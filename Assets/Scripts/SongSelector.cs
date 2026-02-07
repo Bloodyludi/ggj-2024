@@ -10,6 +10,8 @@ public class SongSelector : MonoBehaviour
 
     public event Action<SongLevelData> OnSongChanged;
 
+    public static SongLevelData SelectedSong { get; private set; }
+
     private int currentIndex;
 
     private void Start()
@@ -42,7 +44,7 @@ public class SongSelector : MonoBehaviour
     private void ApplySelection()
     {
         var song = songLibrary.songs[currentIndex];
-        SongLibrary.SelectedSong = song;
+        SelectedSong = song;
 
         if (songNameText != null)
             songNameText.text = "Song: " + song.DisplayName;

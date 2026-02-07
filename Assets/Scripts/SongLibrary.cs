@@ -4,6 +4,4 @@ using UnityEngine;
 public class SongLibrary : ScriptableObject
 {
     public SongLevelData[] songs;
-
-    public static SongLevelData SelectedSong { get; set; }
 }

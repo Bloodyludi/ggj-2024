@@ -29,9 +29,17 @@ public partial class MapManager : MonoBehaviour
         deadlyTileSpawns = spawns;
     }
 
-    [Header("Pickup Settings")] 
+    public void SetPickupConfig(float interval, int comboReward)
+    {
+        pickupSpawnInterval = interval;
+        pickupComboReward = comboReward;
+        pickupTimer = pickupSpawnInterval;
+    }
+
+    [Header("Pickup Settings")]
     [SerializeField] private PickupItem pickupPrefab;
     [SerializeField] private float pickupSpawnInterval = 5.0f;
+    private int pickupComboReward = 5;
     private float pickupTimer;
     private PickupItem activePickup;
 
@@ -118,6 +126,7 @@ public partial class MapManager : MonoBehaviour
                 activePickup = Instantiate(pickupPrefab, dancefloor);
                 activePickup.transform.localPosition = new Vector3(randX, randY) * TileSize;
                 activePickup.GridPosition = candidatePos;
+                activePickup.ComboReward = pickupComboReward;
                 break;
             }
         }

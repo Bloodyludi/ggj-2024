@@ -49,7 +49,7 @@ public class SoundManager : MonoBehaviour
         Services.Register(this);
     }
 
-    public void Init()
+    public void Init(SongLevelData song = null)
     {
         beatManager = Services.Get<BeatManager>();
         sfxMap.Clear();
@@ -66,8 +66,8 @@ public class SoundManager : MonoBehaviour
         // 3. ADD THIS: Maps the Enum to the list of clips
         sfxMap.Add(Sfx.Pickup, pickupSounds); 
 
-        if (SongLibrary.SelectedSong != null)
-            currentSong = SongLibrary.SelectedSong;
+        if (song != null)
+            currentSong = song;
 
         if (currentSong != null)
         {
