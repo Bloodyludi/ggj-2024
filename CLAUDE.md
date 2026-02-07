@@ -23,6 +23,8 @@ Assets/
     CoroutineUtils.cs      # Shared PacedForLoop utility (WebGL-safe, yield return null)
     Services.cs            # Static service locator for manager cross-references
     SongLevelData.cs       # ScriptableObject for song configuration
+  SoundFX/
+    SoundData/           # SongLevelData assets (e.g., Ludwig.asset)
   Scenes/            # SampleScene (gameplay), MainMenu, HowTo, Credits, FireInTheHole
   Prefabs/           # Player, GameController, DancefloorTile, GameUI, SoundManager
   Animators/         # Player 1 & Player 2 animator controllers + animations
@@ -35,12 +37,12 @@ Assets/
 
 | System | Files | Role |
 |--------|-------|------|
-| Beat/Rhythm | `BeatManager.cs` | Central clock. Fires OnBeat/OnPreBeat/OnPostBeat events synced via `Time.timeAsDouble` |
+| Beat/Rhythm | `BeatManager.cs` | Central clock. Fires OnBeat/OnPreBeat/OnPostBeat events. Timing via `GetCurrentTime()` (audio sample position with `Time.time` fallback) |
 | Player | `PlayerController.cs`, `.Movement.cs`, `.Stun.cs` | Partial class. Handles input, beat-window movement, stun/brawl. Injected via `Init()` method. |
-| Player State | `PlayerState.cs` | State machine: None, MissedBeat, Brawl, Stun, Dead |
+| Player State | `PlayerState.cs` | State machine: None, MissedBeat, Brawl, Stun, Dead. Tracks `PlayerIndex` (1 or 2) and `ComboCounter` |
 | Map | `MapManager.cs`, `MapManager.Tiles.cs` | 5x8 wrapping grid. Deadly tile spawning, movement, collision. GC-optimized with reusable caches. |
 | Tiles | `DancefloorTile.cs` | Individual tile: safe/deadly state, beat-synced pulsing. Injected via `Init(BeatManager)`. |
-| Game Flow | `GameController.cs` | 180s timer, pause, win condition evaluation. Bridges SongLevelData to MapManager. |
+| Game Flow | `GameController.cs` | 180s timer, pause, win condition evaluation. Bridges SongLevelData to MapManager. Dramatic 1.5s death pause when all players die. |
 | Audio | `SoundManager.cs` | Music playback via SongLevelData, SFX on separate AudioSource with random clip selection |
 | Song Data | `SongLevelData.cs` | ScriptableObject: music clip, BPM, start delay, deadly tile spawn configs |
 | Animation | `PlayerAnimationController.cs`, `PlayerLocalAnimationController.cs` | Sprite animation + local movement (jump/bob) |
@@ -49,7 +51,7 @@ Assets/
 | Utility | `CoroutineUtils.cs`, `Vector2Extensions.cs`, `ShakeOnBeat.cs`, `AutoDestroy.cs`, `MatchWidth.cs` | Shared coroutine helpers, extensions, camera shake, cleanup, aspect ratio |
 
 ## Key Design Patterns
-- **Service Locator**: `Services` static class for manager-to-manager references. Managers self-register in `Awake()` via `Services.Register(this)` and look up other managers via `Services.Get<T>()`. Falls back to `FindFirstObjectByType<T>()` if not yet registered. Clears on scene load.
+- **Service Locator**: `Services` static class for manager-to-manager references. Managers self-register in `Awake()` via `Services.Register(this)` and look up other managers via `Services.Get<T>()`. Falls back to `FindFirstObjectByType<T>()` if not yet registered. Clears on domain reload via `[RuntimeInitializeOnLoadMethod]`.
 - **Event-driven**: BeatManager broadcasts beat events; systems subscribe via `OnEnable()`/`OnDisable()` rather than poll
 - **Partial classes**: PlayerController split into 3 files, MapManager split into 2
 - **Coroutine animations**: Movement and effects use `CoroutineUtils.PacedForLoop()` with AnimationCurves
@@ -60,10 +62,11 @@ Assets/
 
 ## Game Mechanics Quick Reference
 - **Beat window**: 10% of beat interval on each side (configurable via MoveWindowTimePercent)
-- **Combo**: +1 per beat-synced move, resets to 0 on miss
+- **Combo**: +1 per beat-synced move, resets to 0 on off-beat press (miss)
 - **Board wrapping**: Players wrap around all edges seamlessly
 - **Player collision**: Both players stunned for 1 beat, flung in random directions (Fisher-Yates shuffle)
 - **Deadly tiles**: Move each beat in configured direction, instant kill on contact
+- **Death pause**: When all players die, 1.5s dramatic pause before game over screen
 
 ## Hard Constraints
 - NEVER edit `.meta` files - these are Unity-managed asset references

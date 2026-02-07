@@ -15,7 +15,7 @@
 
 ## Event Subscription
 - Always subscribe in `OnEnable()` and unsubscribe in `OnDisable()`
-- Never use the `-= +=` hack in `Awake()` (this was the old pattern, now removed)
+- Use the `-= +=` pattern for safe re-subscription (prevents duplicates). Used in `OnEnable()` (MapManager) and `Init()` (PlayerController)
 - For runtime-instantiated objects, null-guard the event source in `OnEnable()` (it may not be set yet)
 
 ## Coroutines
@@ -49,8 +49,9 @@
 
 ### Timing
 - NEVER use `AudioSettings.dspTime` - unreliable in WebGL
-- ALWAYS use `Time.timeAsDouble` for high-precision timing
-- No `#if !UNITY_WEBGL` preprocessor blocks remain - use `Time.timeAsDouble` directly
+- BeatManager uses `AudioSource.timeSamples / clip.frequency` via `GetCurrentTime()` for audio-synced timing (falls back to `Time.time` if audio not ready)
+- `Time.timeAsDouble` is available for non-audio timing if needed
+- No `#if !UNITY_WEBGL` preprocessor blocks remain
 
 ### Threading & Async
 - WebGL is **single-threaded** - no `System.Threading`, no `Task`, no `async`/`await`

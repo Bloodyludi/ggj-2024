@@ -7,15 +7,16 @@ BeatManager (central clock)
   ├── OnBeat ──────> ShakeOnBeat (camera shake)
   ├── OnBeat ──────> DancefloorTile.StartPulsing() (visual pulse)
   ├── OnPreBeat ───> (unused currently, available for pre-beat prep)
-  ├── OnPostBeat ──> PlayerController.CheckPlayerMoved() (combo validation)
+  ├── OnPostBeat ──> PlayerController.CheckPlayerMoved() (stub; miss logic now in AttemptMove)
   └── OnPostBeat ──> MapManager.UpdateDeadlyTiles() (hazard movement + death check)
 
 GameController (orchestrator)
-  ├── Awake() ─────────> Services.Register(this) + Services.Get<*>() for all managers
-  ├── Awake() ─────────> SoundManager.Init() (load song data)
-  ├── Awake() ─────────> MapManager.SetDeadlyTileSpawns() (bridge song→map)
-  ├── StartMatch() ────> SoundManager.PlayMusic() + BeatManager.ShouldPerformTicks
-  ├── AllPlayersDead() ─> Time.timeScale speed-up
+  ├── Awake() ─────────> Services.Register(this)
+  ├── Start() ─────────> Services.Get<*>() for all managers
+  ├── Start() ─────────> SoundManager.Init() (load song data)
+  ├── Start() ─────────> MapManager.SetDeadlyTileSpawns() (bridge song→map)
+  ├── StartMatch() ────> WaitUntil players spawned, then SoundManager.PlayMusic() + BeatManager.ShouldPerformTicks
+  ├── AllPlayersDead() ─> 1.5s dramatic pause, snap timer to 0, then EvaluateGameOver
   ├── PauseGame() ─────> Time.timeScale toggle
   └── GameOver() ──────> GameOverScreen (result display)
 
@@ -39,7 +40,7 @@ Inter-object references use one of three patterns:
 2. **`[SerializeField]`** for asset references (prefabs, AudioClips, ScriptableObjects, UI elements, Transforms)
 3. **`Init()` method** for runtime-instantiated objects (called by the instantiator, e.g. PlayerController, DancefloorTile)
 
-Managers self-register in `Awake()` via `Services.Register(this)`. The registry clears on scene load.
+Managers self-register in `Awake()` via `Services.Register(this)`. The registry clears on domain reload via `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]`.
 No `FindObjectOfType`, `Find`, or `FindWithTag` calls remain.
 
 ## Event Subscription Pattern
@@ -55,14 +56,16 @@ Exception: `PlayerController.Stun.cs` dynamically subscribes/unsubscribes `Resol
 
 The heartbeat of the game. Everything gameplay-related is driven by beat events.
 
-- **Timing source**: `Time.timeAsDouble` for WebGL-safe high-precision timing
-- **Beat calculation**: `currentAudioTime / beatInterval` where `beatInterval = 60f / bpm`
+- **Timing source**: `GetCurrentTime()` reads `AudioSource.timeSamples / clip.frequency` (falls back to `Time.time` if audio not ready)
+- **Beat position**: `GetCurrentBeatPosition()` returns `timeSamples / (frequency * beatInterval)`
+- **Beat calculation**: `currentBeatPosition` floor compared to `BeatCounter` to detect new beats
 - **Three-phase event cycle per beat**:
   1. `OnBeat` - exact beat moment (visual effects, camera shake)
   2. `OnPreBeat` - near end of beat (preparation window)
   3. `OnPostBeat` - start of next beat (validation: did player move? tile updates, death checks)
 - **Move window**: `beatInterval * MoveWindowTimePercent` (default 10%) on each side of beat
 - **BPM**: Set from SongLevelData at runtime
+- **Null safety**: Update() guards against null gameController, null soundManager, and checks `MusicSource.isPlaying` before processing beats
 - **Dependencies**: SoundManager and GameController resolved via `Services.Get<T>()` in `Start()`
 
 ## Song Data (SongLevelData.cs - ScriptableObject)
@@ -80,16 +83,17 @@ Created via Assets > Create > Lab Rats > Song Level Data. Referenced by SoundMan
 ### PlayerController.cs (core)
 - Holds references: PlayerState, PlayerInput, BeatManager, MapManager, SoundManager
 - `Init(MapManager)` called by PlayerManager after instantiation; resolves SoundManager and BeatManager via `Services.Get<T>()`
-- Subscribes to `PlayerInput.onActionTriggered` in `OnEnable()`
-- Subscribes to `BeatManager.OnPostBeat` for move validation in `OnEnable()` (null-guarded for pre-Init)
+- Subscribes to `PlayerInput.onActionTriggered` in `OnEnable()` → `EventHandler()` routes "move" actions to `AttemptMove()`
+- Subscribes to `BeatManager.OnPostBeat` for `CheckPlayerMoved` in `Init()` (uses `-= +=` for safe subscription)
 - `blockedUntil` timestamp prevents rapid input during animations
 
 ### PlayerController.Movement.cs
-- `OnMoveRegistered()`: Entry point when player presses direction
-- Beat window check: `lapsedTimeSinceBeat <= moveWindowSeconds` OR `timeUntilNextBeat <= moveWindowSeconds`
+- `AttemptMove(Vector2)`: Entry point when player presses direction. Checks beat window, handles miss (combo reset + 0.1s lockout on off-beat press)
+- Beat window check: `lapsedTimeSinceBeat <= moveWindow` OR `timeUntilNextBeat <= moveWindow` (stored as `hitBeat` bool)
 - `MoveOnBeat()`: Increments combo, triggers animation, starts Move coroutine
 - `Move()`: Coroutine using `CoroutineUtils.PacedForLoop()` that lerps position over `beatInterval * 0.2f`
-- `CheckPlayerMoved()`: Called on PostBeat - resets combo if player didn't move in window
+- Board wrapping applied via `mapManager.GetLoopPosition()` during and after movement
+- `CheckPlayerMoved()`: Stub subscribed to OnPostBeat (miss logic now handled in `AttemptMove`)
 
 ### PlayerController.Stun.cs
 - `StunPlayer(direction)`: Sets Stun state, records recovery beat number
@@ -98,8 +102,9 @@ Created via Assets > Create > Lab Rats > Song Level Data. Referenced by SoundMan
 
 ### PlayerState.cs
 - States: `None` (idle) -> `MissedBeat` | `Brawl` -> `Stun` -> `Dead`
+- `PlayerIndex`: identifies P1 (1) vs P2 (2), set by PlayerManager at spawn
 - `CanWalk`: true only when `InputEnabled && state allows it`
-- `ComboCounter`: tracked per player, displayed via ComboCounter.cs
+- `ComboCounter`: tracked per player, displayed via ComboCounter.cs (null-guarded)
 - Events: `OnStateChanged`, `OnOrientationChanged`
 
 ## Map System (Partial Class: 2 files)
@@ -125,7 +130,7 @@ Created via Assets > Create > Lab Rats > Song Level Data. Referenced by SoundMan
 ### DancefloorTile.cs
 - Three visual states: dark (even position), bright (odd position), deadly (red)
 - `Init(BeatManager)` called by MapManager during grid creation
-- `StartPulsing()`: Coroutine synced to `BeatManager.NextBeatTime` using `Time.timeAsDouble` (WebGL-safe)
+- `StartPulsing()`: Coroutine synced to `BeatManager.NextBeatTime` using `beatManager.GetCurrentTime()` (null-guarded)
 - Beat-synced scale pulse with random jitter for visual variety
 
 ## Shared Utility (CoroutineUtils.cs)
@@ -165,11 +170,12 @@ SampleScene (gameplay)
 ## Win Condition Logic (GameController.cs)
 
 ```
-if (both dead) -> Lose (draw)
-if (one dead) -> survivor wins
+if (all players dead) -> 1.5s dramatic pause, snap timer to 0, then evaluate:
+  if (both dead) -> Lose (draw)
+  if (one dead) -> survivor wins
 if (time up, both alive) -> higher combo wins (or Draw)
-if (time up, both dead before end) -> same as both dead
 ```
+Note: `StartMatch()` uses `WaitUntil(() => playerManager.PlayerStates.Count >= 2)` to ensure players are spawned before starting.
 
 ## Key Constants & Tuning Values
 - Match duration: 180 seconds
